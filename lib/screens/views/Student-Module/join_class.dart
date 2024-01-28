@@ -61,9 +61,8 @@ class _JoinClassState extends State<JoinClass> {
 
   @override
   Widget build(BuildContext context) {
-
     final user = Provider.of<User>(context);
-    name.text = user.displayName!;
+    name.text = user.displayName ?? 'Noname';
     return Scaffold(
             appBar: AppBar(
               title: Text(

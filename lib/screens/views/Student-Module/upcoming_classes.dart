@@ -86,7 +86,6 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
     if (kDebugMode) {
       print(mToken);
     }
@@ -164,15 +163,6 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
                                         });
                                         if (_formKey.currentState!.validate()) {
                                           subCollName = topics.text;
-                                          // ErrorMsg error = ErrorMsg('');
-                                          // var db = ScheduleClass(
-                                          //     code: widget.classData['code'],
-                                          //     date: selectedDate.toLocal(),
-                                          //     error: error,
-                                          //     time: _time,
-                                          //     topics: topics.text,
-                                          //     url: url.text);
-                                          // await db.scheduleClass();
                                           await ClassDatabase.nextClass(
                                             widget.classData['code'],
                                             url.text,
@@ -183,10 +173,10 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
                                           DocumentSnapshot snapshot =
                                               await FirebaseFirestore.instance
                                                   .collection('users')
-                                                  .doc(user.email)
+                                                  .doc(FirebaseAuth.instance.currentUser?.email)
                                                   .get();
                                           String token = snapshot['token'];
-                                          FirestoreService.sendPushNotification(
+                                         await FirestoreService.sendPushNotification(
                                             title: url.text.toString(),
                                             body: topics.text.toString(),
                                             token: token,

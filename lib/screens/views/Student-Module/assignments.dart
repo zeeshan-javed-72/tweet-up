@@ -77,7 +77,7 @@ class _AssignmentsState extends State<Assignments> {
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               )
             : CountdownTimer(
-                duration: timeRemaining!,
+                duration: timeRemaining ?? const Duration(days: 1),
               ),
         trailing: isExpired
             ?

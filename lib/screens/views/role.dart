@@ -181,7 +181,7 @@ class _roleState extends State<Role> {
                             Navigator.push(
                                 context,
                                 CupertinoPageRoute(
-                                    builder: (_) => BottomBar()));
+                                    builder: (_) => const BottomBar()));
                             if (kDebugMode) {
                               print('Student.');
                             }
@@ -206,8 +206,8 @@ class _roleState extends State<Role> {
                   const SizedBox(
                     height: 10,
                   ),
-                  Row(
-                    children: const [
+                  const Row(
+                    children: [
                       Expanded(
                           child: Divider(
                         color: Colors.black54,

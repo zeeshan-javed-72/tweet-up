@@ -50,10 +50,10 @@ class _RegisterState extends State<Register> {
                     }
                   },
                 ),
-                SizedBox(height: 20*h),
-                SizedBox(height: 20*h),
+                SizedBox(height: 8*h),
+
                 CustomTextField(
-                  contrroller: pass,
+                  contrroller: phone,
                   hintText: "Phone Number",
                   textInputAction: TextInputAction.next,
                   validator: (v) {
@@ -65,6 +65,7 @@ class _RegisterState extends State<Register> {
                   },
 
                 ),
+                SizedBox(height: 8*h),
                 Consumer<AuthViewModel>(
                   builder: (context, provider, child) {
                     return CustomTextField(
@@ -85,7 +86,7 @@ class _RegisterState extends State<Register> {
                     );
                   },
                 ),
-                SizedBox(height: 20*h),
+                SizedBox(height: 8*h),
                 Consumer<AuthViewModel>(
                   builder: (context, provider, child) {
                     return CustomTextField(

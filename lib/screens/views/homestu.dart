@@ -275,7 +275,7 @@ class UserInfo extends StatelessWidget {
               CircleAvatar(
                 maxRadius: 50,
                 backgroundColor: Colors.white,
-                child: Text(
+                child: Text(user!.displayName == null? 'N' :
                   "${user?.displayName?.substring(0, 1)}",
                   style: TextStyle(
                     fontSize: 36,
@@ -292,7 +292,7 @@ class UserInfo extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text("${user?.displayName}",
+                        Text(user!.displayName ?? 'Noname',
                             textAlign: TextAlign.start,
                             style: GoogleFonts.alegreya(
                                 fontWeight: FontWeight.bold,

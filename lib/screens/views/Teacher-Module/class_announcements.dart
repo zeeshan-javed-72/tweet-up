@@ -203,7 +203,7 @@ class ListOfAnnouncements extends StatelessWidget {
                               == FirebaseAuth.instance.currentUser?.uid ?
                              CrossAxisAlignment.start : CrossAxisAlignment.end,
                           children: [
-                              Text(announcementData['senderName'],
+                              Text('${announcementData['senderName']}',
                                 style: TextStyle(
                                   color: announcementData['postedBy'] == FirebaseAuth.instance.currentUser?.uid ?
                                       Colors.black  : colorList[colorIndex % colorList.length],

@@ -252,7 +252,7 @@ class _UserInfoState extends State<UserInfo> {
                 backgroundColor: Colors.white,
                 child: Text(
                   "${widget.user?.displayName?.substring(0, 1)}",
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                   ),
                 ),
