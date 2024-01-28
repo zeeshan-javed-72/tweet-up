@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "283122160674",
+    "project_id": "mobile-school-master",
+    "storage_bucket": "mobile-school-master.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283122160674:android:e2616d3836a79f7a6d667b",
+        "android_client_info": {
+          "package_name": "com.mehroz_h.tweet_up"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwhmIKmrh6B6FpmlbPUXOE4dTps5TP6to"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

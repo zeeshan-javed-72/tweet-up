@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyD846elUV1tjFgdg-36T3fzY65Rri4ZHKc</string>
+	<key>GCM_SENDER_ID</key>
+	<string>283122160674</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.mehrozh.tweetUp</string>
+	<key>PROJECT_ID</key>
+	<string>mobile-school-master</string>
+	<key>STORAGE_BUCKET</key>
+	<string>mobile-school-master.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:283122160674:ios:4c562c8d77b63dbe6d667b</string>
+</dict>
+</plist>
