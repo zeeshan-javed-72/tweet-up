@@ -27,17 +27,21 @@ class _AssignmentsState extends State<Assignments> {
 
 
   void calculateTimeRemaining() {
-
     final now = DateTime.now();
     if (now.isBefore(widget.snapshot?['assignmentDueDate'].toDate())) {
       setState(() {
-        timeRemaining =
-            widget.snapshot?['assignmentDueDate'].toDate().difference(now);
+        timeRemaining = widget.snapshot?['assignmentDueDate'].toDate().difference(now);
       });
     } else {
       timeRemaining = const Duration();
       isExpired = true;
     }
+  }
+
+  @override
+  void initState() {
+    calculateTimeRemaining();
+    super.initState();
   }
 
   @override
@@ -77,7 +81,7 @@ class _AssignmentsState extends State<Assignments> {
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               )
             : CountdownTimer(
-                duration: timeRemaining ?? const Duration(days: 1),
+                duration: timeRemaining!,
               ),
         trailing: isExpired
             ?

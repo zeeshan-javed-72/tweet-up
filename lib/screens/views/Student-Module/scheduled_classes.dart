@@ -26,13 +26,11 @@ class ScheduledClassesState extends State<ScheduledClasses> {
         iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
         backgroundColor: Colors.white,
       ),
-      body: widget.classData.isEmpty? const Center(
-        child: Icon(Icons.hourglass_empty_outlined, size: 50,),
-      ): StreamBuilder(
+      body: StreamBuilder(
           stream: FirebaseFirestore.instance
-              .collection(widget.classData['code'])
-              .doc('Upcoming classes')
-              .collection('Upcoming classes')
+          .collection('classes')
+              .doc(widget.classData['code'])
+              .collection('upComingClasses')
               .snapshots(),
           builder: (context, AsyncSnapshot classSnapshot) {
             return classSnapshot.hasData
@@ -41,10 +39,8 @@ class ScheduledClassesState extends State<ScheduledClasses> {
                     itemBuilder: (context, index) {
                       DocumentSnapshot lectureData =
                           classSnapshot.data.docs[index];
-                      print(lectureData.data());
                       final url = TextEditingController();
                       url.text = lectureData['url'];
-
                       return Card(
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),

@@ -41,6 +41,7 @@ class AnnouncementsState extends State<Announcements> {
   bool isTure = false;
   String tokens = "";
   String userName = '';
+  String userImg = '';
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? messagesSubscription;
   List<String> fcmTokens = [];
 
@@ -63,11 +64,11 @@ class AnnouncementsState extends State<Announcements> {
   void getMyData(){
     FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots()
         .listen((event) {
-       userName = event['name'];
+        userName = event['name'];
+        userImg = event['userImage'];
     });
   }
-
-  readAllMessages(){
+  void readAllMessages(){
     messagesSubscription = FirebaseFirestore.instance
         .collection('classes')
         .doc(widget.classData?['code'])
@@ -84,6 +85,7 @@ class AnnouncementsState extends State<Announcements> {
       batch.commit();
     });
   }
+
   @override
   void initState() {
     super.initState();
@@ -172,6 +174,7 @@ class AnnouncementsState extends State<Announcements> {
                           title: userName.toString(),
                           body: announcement.text.trim(),
                           fcmToken: fcmTokens,
+                          profile: userImg,
                         );
                         announcement.clear();
                       }

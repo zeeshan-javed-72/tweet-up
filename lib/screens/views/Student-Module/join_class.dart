@@ -149,7 +149,7 @@ class _JoinClassState extends State<JoinClass> {
                                       context,
                                       studentName: userName,
                                       userImg: userImage,
-                                  )
+                                            )
                                       .then((value) {
                                     setState(() {
                                       _loading = false;

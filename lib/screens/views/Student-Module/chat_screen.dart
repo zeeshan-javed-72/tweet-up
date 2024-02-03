@@ -7,9 +7,21 @@ import 'package:tweet_up/generated/assets.dart';
 import 'package:tweet_up/screens/views/Student-Module/chat_view/widgets/chat_badge_widget.dart';
 import 'package:tweet_up/screens/views/Teacher-Module/class_announcements.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   final Map<dynamic, dynamic>? classData;
   const ChatScreen({Key? key, this.classData}) : super(key: key);
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,17 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:tweet_up/screens/views/Student-Module/Home-Widgets/my_classes.dart';
 import 'package:tweet_up/screens/views/Student-Module/scheduled_classes.dart';
 import 'package:tweet_up/services/database.dart';
 import 'package:tweet_up/services/firestore_service.dart';
 import 'package:tweet_up/util/utils.dart';
-import '../../../models/error.dart';
-import '../../../services/loading.dart';
 import '../../../widgets/formFields.dart';
 
 class UpcomingClasses extends StatefulWidget {
@@ -44,13 +38,9 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
     _time = TimeOfDay.now();
     TimeOfDay? picked =
         await showTimePicker(context: context, initialTime: _time);
-
     setState(() {
       _time = picked!;
     });
-    if (kDebugMode) {
-      print(_time);
-    }
   }
   final url = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -141,6 +131,7 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
                                     _loading = true;
                                   });
                                   if (_formKey.currentState!.validate()) {
+                                    log('form is validate====> ');
                                     subCollName = topics.text;
                                     await ClassDatabase.nextClass(
                                       widget.classData['code'],
@@ -149,18 +140,12 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
                                       _time.toString(),
                                       selectedDate.toLocal(),
                                     );
-                                    DocumentSnapshot snapshot =
-                                        await FirebaseFirestore.instance
-                                            .collection('users')
-                                            .doc(FirebaseAuth
-                                                .instance.currentUser?.email)
-                                            .get();
-                                    String token = snapshot['token'];
                                     await NotificationService
                                         .sendPushNotification(
                                             title: url.text.toString(),
                                             body: topics.text.toString(),
-                                            fcmToken: []);
+                                            fcmToken: [],
+                                    );
                                     setState(() {
                                       url.clear();
                                       topics.clear();

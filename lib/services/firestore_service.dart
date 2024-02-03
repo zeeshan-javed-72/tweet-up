@@ -210,13 +210,6 @@ class NotificationService {
         icon: 'app_notification',
         groupKey: "tweet-up",
         groupAlertBehavior: GroupAlertBehavior.summary,
-        // actions: [
-        //    AndroidNotificationAction(
-        //      "tweet-up",
-        //      "Reply",
-        //   inputs: [replyAction],
-        //   ),
-        // ],
       );
       DarwinNotificationDetails iosNotificationDetails =
           const DarwinNotificationDetails(
@@ -256,9 +249,7 @@ class NotificationService {
                 'type': 'personalChat',
                 'body': body,
                 'title': title,
-                'photo': (profile == null || profile == 'null')
-                    ? 'https://firebasestorage.googleapis.com/v0/b/dring-389312.appspot.com/o/profile.png?alt=media&token=00636dbd-09fd-4d0a-ac29-6c86a2e0ff52'
-                    : profile,
+                'photo': profile ?? 'https://firebasestorage.googleapis.com/v0/b/dring-389312.appspot.com/o/profile.png?alt=media&token=00636dbd-09fd-4d0a-ac29-6c86a2e0ff52',
               },
               "notification": {
                 "title": title,
