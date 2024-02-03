@@ -5,6 +5,7 @@ class Assets {
   static const String assetsImageProcessing202208233223017k3jxr = 'assets/image_processing20220823-32230-17k3jxr.png';
   static const String assetsImageProcessing202208233831H9st2i = 'assets/image_processing20220823-3831-h9st2i.png';
   static const String assetsImageProcessing202208237065Li8umu = 'assets/image_processing20220823-7065-li8umu.png';
+  static const String assetsImagesAppIcon = 'assets/images/app_icon.png';
   static const String imagesAppIcon = 'assets/images/appIcon.png';
   static const String imagesAppLogo = 'assets/images/appLogo.png';
   static const String imagesBottom1 = 'assets/images/bottom1.png';

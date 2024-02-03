@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -21,7 +24,7 @@ List<Color> colorList = [
 
 class Announcements extends StatefulWidget {
   final Map<dynamic, dynamic>? classData;
-  const Announcements({Key? key,this.classData}) : super(key: key);
+  const Announcements({super.key,this.classData});
   static const routeName = '/announcements';
 
   @override
@@ -37,122 +40,151 @@ class AnnouncementsState extends State<Announcements> {
   Color? color = Colors.grey.shade300;
   bool isTure = false;
   String tokens = "";
-  getUserData(){
-    FirebaseFirestore.instance
+  String userName = '';
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? messagesSubscription;
+  List<String> fcmTokens = [];
+
+  void getUserData(){
+    fcmTokens.clear();
+   FirebaseFirestore.instance
         .collection('users')
         .get()
         .then((QuerySnapshot querySnapshot) {
       for (var doc in querySnapshot.docs) {
-        if(mounted){
-          setState(() {
-            tokens = doc['token'];
-            print("this is token $tokens");
-          });
+        if(doc.exists){
+          if(mounted){
+            setState(() => fcmTokens.add(doc['token']??''));
+          }
+          log('tokens ===> ${fcmTokens}');
         }
       }
+    });
+  }
+  void getMyData(){
+    FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots()
+        .listen((event) {
+       userName = event['name'];
+    });
+  }
+
+  readAllMessages(){
+    messagesSubscription = FirebaseFirestore.instance
+        .collection('classes')
+        .doc(widget.classData?['code'])
+        .collection('groupChat')
+        .where(
+        'status', isEqualTo: 'unread',
+    ).where('postedBy', isNotEqualTo: user?.uid)
+        .snapshots()
+        .listen((querySnapshot) {
+      final batch = FirebaseFirestore.instance.batch();
+      for (final doc in querySnapshot.docs) {
+        batch.update(doc.reference, {'status': 'read'});
+      }
+      batch.commit();
     });
   }
   @override
   void initState() {
     super.initState();
-    FirestoreService.requestPermission(context);
-    FirestoreService.initInfo(context);
     getUserData();
+    getMyData();
+    readAllMessages();
   }
+
+  @override
+  void dispose() {
+    messagesSubscription?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // getUserData();
     final user = Provider.of<User?>(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        shadowColor: Colors.white,
+        surfaceTintColor: Colors.white,
         title: Text(widget.classData!['subName'].toString(),
           style: TextStyle(color: Theme.of(context).colorScheme.secondary),
         ),
         iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
         backgroundColor: Colors.white,
       ),
-      body: Scaffold(
-        body: Column(
-          children: [
-            ListOfAnnouncements(classData: widget.classData!, scrollController: _scrollController),
-             Align(
-              alignment: Alignment.bottomCenter,
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 8,
-                    child: TextFormField(
-                      controller: announcement,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      textInputAction: TextInputAction.newline,
-                      onChanged: (String? index){
-                        if(index!.isNotEmpty){
-                          setState(() {
-                            color = Theme.of(context).primaryColor;
-                            isTure = false;
-                          });
-                        }else if(index.isEmpty){
-                          setState(() {
-                            color = Colors.grey.shade300;
-                            isTure = true;
-                          });
-                        }
-                      },
-                      cursorColor: Theme.of(context).primaryColor,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.only(left: 8, top: 0, bottom: 0, right: 0),
-                        border: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.black),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        filled: true,
-                        hintText: "Type a message",
-                        fillColor: Colors.grey.shade300,
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          ListOfAnnouncements(classData: widget.classData!, scrollController: _scrollController),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 8,
+                  child: TextFormField(
+                    controller: announcement,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    textInputAction: TextInputAction.newline,
+                    onChanged: (String? index){
+                      if(index!.isNotEmpty){
+                        setState(() {
+                          color = Theme.of(context).primaryColor;
+                          isTure = false;
+                        });
+                      }else if(index.isEmpty){
+                        setState(() {
+                          color = Colors.grey.shade300;
+                          isTure = true;
+                        });
+                      }
+                    },
+                    cursorColor: Theme.of(context).primaryColor,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.only(left: 8, top: 0, bottom: 0, right: 0),
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(20),
                       ),
+                      filled: true,
+                      hintText: "Type a message",
+                      fillColor: Colors.grey.shade300,
                     ),
                   ),
-                  Expanded(
-                    flex: 1,
-                    child: IconButton(
-                      onPressed: () async{
-                        if (announcement.text.isNotEmpty){
-                          _scrollController.animateTo(
-                              _scrollController.position.minScrollExtent,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeOut);
-                          // var db = MakeAnnouncement(
-                          //   widget.classData?['code'],
-                          //   FirebaseAuth.instance.currentUser!.uid,
-                          //   announcement.text.trim(),
-                          //   user!.displayName!,
-                          // );
-                          ClassDatabase.groupMessage(
-                            widget.classData?['code'],
-                            FirebaseAuth.instance.currentUser!.uid,
-                            announcement.text.trim(),
-                            user!.displayName,
-                          );
-                           FirestoreService.sendPushNotification(
-                            title: user.displayName,
-                            body: announcement.text.trim(),
-                            token: tokens,
-                          );
-                          announcement.clear();
-                          // await db.makeAnnouncement();
-                        }
-                      },
-                      icon: Icon(Icons.send_outlined,
-                        size: 28, color: announcement.text.isEmpty ? Colors.grey :
+                ),
+                Expanded(
+                  flex: 1,
+                  child: IconButton(
+                    onPressed: () async{
+                      if (announcement.text.isNotEmpty){
+                        _scrollController.animateTo(
+                            _scrollController.position.minScrollExtent,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeOut);
+                        ClassDatabase.groupMessage(
+                          widget.classData?['code'],
+                          FirebaseAuth.instance.currentUser!.uid,
+                          announcement.text.trim(),
+                          userName.toString(),
+                        );
+                        NotificationService.sendPushNotification(
+                          title: userName.toString(),
+                          body: announcement.text.trim(),
+                          fcmToken: fcmTokens,
+                        );
+                        announcement.clear();
+                      }
+                    },
+                    icon: Icon(Icons.send_outlined,
+                      size: 28, color: announcement.text.isEmpty ? Colors.grey :
                       Theme.of(context).primaryColor,),
-                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -167,7 +199,6 @@ class ListOfAnnouncements extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var colorIndex = -1;
     return Expanded(
       child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
@@ -181,115 +212,84 @@ class ListOfAnnouncements extends StatelessWidget {
               return const Text('Something went wrong');
             }
             if (!snapshot.hasData) {
-              return Center(child: Column(
-                children: const [
-                  CircularProgressIndicator(),
+              return const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator.adaptive(backgroundColor: Colors.grey),
                   Text("Loading"),
                 ],
               ));
             }
-            colorIndex++;
-            return  ListView.builder(
-                    controller: scrollController,
-                    reverse: true,
-                    itemCount: snapshot.data!.docs.skip(1).length + 0,
-                    itemBuilder: (context, index) {
-                      DocumentSnapshot announcementData =
-                          snapshot.data!.docs[index];
-                      return Padding(
-                        padding:  const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-                        child: Column(
-                          crossAxisAlignment: announcementData['postedBy']
-                              == FirebaseAuth.instance.currentUser?.uid ?
-                             CrossAxisAlignment.start : CrossAxisAlignment.end,
-                          children: [
-                              Text('${announcementData['senderName']}',
-                                style: TextStyle(
-                                  color: announcementData['postedBy'] == FirebaseAuth.instance.currentUser?.uid ?
-                                      Colors.black  : colorList[colorIndex % colorList.length],
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            const SizedBox(height: 2),
-                            ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: MediaQuery.of(context).size.width -95,
-                              ),
-                              child: InkWell(
-                                onLongPress: announcementData['postedBy'] == FirebaseAuth.instance.currentUser?.uid ?
-                                    (){
-                                  showDialog<void>(
-                              context: context,
-                              barrierDismissible: true,
-                              // false = user must tap button, true = tap outside dialog
-                              builder: (BuildContext dialogContext) {
-                                return AlertDialog(
-                                  title: const Text('Alert Box'),
-                                  content: const Text('Do you want ot delete message?'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: const Text('Delete'),
-                                      onPressed: () {
-                                        Navigator.of(dialogContext)
-                                            .pop(); // Dismiss alert dialog
-                                      },
-                                    ),
-                                    TextButton(
-                                      child: const Text('Cancel'),
-                                      onPressed: () {
-                                        Navigator.of(dialogContext)
-                                            .pop(); // Dismiss alert dialog
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }: null,
-                                child: Container(
-                                  padding: const EdgeInsets.only(left: 15, right: 15, top: 12, bottom: 12),
-                                    decoration: BoxDecoration(
-                                        color: announcementData['postedBy'] == FirebaseAuth.instance.currentUser?.uid ?
-                                        Theme.of(context).primaryColor : Colors.blueGrey.shade100,
-                                        borderRadius: const BorderRadius.only(
-                                          topRight: Radius.circular(8),
-                                          topLeft: Radius.zero,
-                                          bottomLeft: Radius.circular(8),
-                                          bottomRight: Radius.circular(8),
-                                        )
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          announcementData['post'],
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                            color: announcementData['postedBy']
-                                                == FirebaseAuth.instance.currentUser?.uid ?
-                                                Colors.white : Theme.of(context).primaryColor,
-                                            fontWeight: FontWeight.bold
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                              ),
-                            ),
-                            Text(DateFormat("MMM d hh:mm a").format(announcementData['time'].toDate()),
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                color: announcementData['postedBy']
-                                    == FirebaseAuth.instance.currentUser?.uid ?
-                                Colors.grey : Colors.blueGrey,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            // SentMessage(message: "message", send: announcementData['postedBy']),
-                        ],
+            return  ListView(
+              controller: scrollController,
+              reverse: true,
+              children: snapshot.data!.docs.map((announcementData){
+                return Padding(
+                  padding:  const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                  child: Column(
+                    crossAxisAlignment: announcementData['postedBy']
+                        == FirebaseAuth.instance.currentUser?.uid ?
+                    CrossAxisAlignment.start : CrossAxisAlignment.end,
+                    children: [
+                      Text('${announcementData['senderName']}',
+                        style: TextStyle(
+                            color: announcementData['postedBy'] ==
+                                FirebaseAuth.instance.currentUser?.uid ?
+                            Colors.black  : Colors.black,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 2),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width -95,
                         ),
-                      );
-                    },
-                  );
+                        child: Container(
+                          padding: const EdgeInsets.only(left: 15, right: 15, top: 12, bottom: 12),
+                          decoration: BoxDecoration(
+                              color: announcementData['postedBy'] == FirebaseAuth.instance.currentUser?.uid ?
+                              Theme.of(context).primaryColor : const Color(0xffEDF0F2),
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(8),
+                                topLeft: Radius.zero,
+                                bottomLeft: Radius.circular(8),
+                                bottomRight: Radius.circular(8),
+                              )
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                announcementData['post'],
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                    color: announcementData['postedBy']
+                                        == FirebaseAuth.instance.currentUser?.uid ?
+                                    Colors.white : Colors.black,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Text(DateFormat("MMM d hh:mm a").format(announcementData['time'].toDate()),
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                            color: announcementData['postedBy']
+                                == FirebaseAuth.instance.currentUser?.uid ?
+                            Colors.grey : Colors.blueGrey,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10
+                        ),
+                      ),
+                      // SentMessage(message: "message", send: announcementData['postedBy']),
+                    ],
+                  ),
+                );
+              }).toList(),
+            );
           }),
     );
   }

@@ -19,7 +19,7 @@ class Role extends StatefulWidget {
 }
 
 class _roleState extends State<Role> {
-  var firebaseService = FirestoreService();
+  var firebaseService = NotificationService();
   var meetingIdController = TextEditingController();
   var meetingPasswordController = TextEditingController();
 

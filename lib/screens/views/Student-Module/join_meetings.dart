@@ -11,7 +11,7 @@ class JoinMeetings extends StatefulWidget {
 }
 
 class _JoinMeetingsState extends State<JoinMeetings> {
-  var firebaseService = FirestoreService();
+  var firebaseService = NotificationService();
   var meetingIdController = TextEditingController();
   var meetingPasswordController = TextEditingController();
   @override

@@ -27,7 +27,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   String image = "https://img.freepik.com/free-vector/laptop-w"
       "ith-program-code-isometric-icon-software-development-programming-applications-dark-neon_39422-971.jpg";
-  FirestoreService firestoreService = FirestoreService();
+  NotificationService firestoreService = NotificationService();
   User? user = FirebaseAuth.instance.currentUser;
   @override
   void initState() {

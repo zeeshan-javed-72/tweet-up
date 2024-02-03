@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,16 +23,49 @@ class HomeStudent extends StatefulWidget {
 
 class homestuState extends State<HomeStudent> {
   var currentId = FirebaseAuth.instance.currentUser!.uid;
+  String userName = '';
+  String emailID = '';
+
+  void saveFcmToken(){
+   FirebaseMessaging.instance.getToken().then((fcmToken){
+     FirebaseFirestore.instance.collection('users').doc(currentId).update({
+       'token': fcmToken.toString(),
+     });
+   });
+  }
+  void fetchMyData() async{
+   await FirebaseFirestore.instance.collection('users').doc(currentId).get()
+       .then((value){
+      if(value.exists){
+        if(mounted){
+          setState(() {
+            userName = value['name'];
+            emailID = value['email'];
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    saveFcmToken();
+    fetchMyData();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   String image =
       "https://img.freepik.com/free-vector/laptop-with-program-code-isometric-icon-software-development-programming-applications-dark-neon_39422-971.jpg";
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
-    print(currentId);
     var width = MediaQuery.of(context).size.width;
-    var height =
-        MediaQuery.of(context).size.height - AppBar().preferredSize.height;
+    var height = MediaQuery.of(context).size.height - AppBar().preferredSize.height;
     return SafeArea(
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
@@ -75,7 +109,7 @@ class homestuState extends State<HomeStudent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                UserInfo(user: user),
+                UserInfo(userName: userName,emailId: emailID),
                 SizedBox(height: height * 0.03),
                 Text(
                   "UpComing Classes",
@@ -94,7 +128,6 @@ class homestuState extends State<HomeStudent> {
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.hasError) {
-                      print(snapshot.error.toString());
                       return const Text('Something went wrong');
                     }
                     if (!snapshot.hasData) {
@@ -125,10 +158,8 @@ class homestuState extends State<HomeStudent> {
                     );
                   },
                 ),
-
-                // const UpcomingClasses(),
                 SizedBox(
-                  height: height * 0.04,
+                  height: height * 0.04
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -242,11 +273,9 @@ class homestuState extends State<HomeStudent> {
 
 class UserInfo extends StatelessWidget {
   const UserInfo({
-    super.key,
-    this.user,
+    super.key, required this.emailId, required this.userName,
   });
-
-  final User? user;
+  final String emailId,userName;
 
   @override
   Widget build(BuildContext context) {
@@ -275,8 +304,7 @@ class UserInfo extends StatelessWidget {
               CircleAvatar(
                 maxRadius: 50,
                 backgroundColor: Colors.white,
-                child: Text(user!.displayName == null? 'N' :
-                  "${user?.displayName?.substring(0, 1)}",
+                child: Text('$userName',
                   style: TextStyle(
                     fontSize: 36,
                     color: Theme.of(context).primaryColor,
@@ -292,7 +320,7 @@ class UserInfo extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(user!.displayName ?? 'Noname',
+                        Text('$userName',
                             textAlign: TextAlign.start,
                             style: GoogleFonts.alegreya(
                                 fontWeight: FontWeight.bold,
@@ -309,7 +337,7 @@ class UserInfo extends StatelessWidget {
                       ],
                     ),
                     // SizedBox(height: 2.h,),
-                    Text("${user?.email}",
+                    Text("$emailId",
                         style: GoogleFonts.questrial(
                             fontWeight: FontWeight.bold, fontSize: 12)),
                   ],

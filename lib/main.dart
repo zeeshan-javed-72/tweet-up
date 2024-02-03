@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tweet_up/Bloc-Patteren/theme_cubit.dart';
 import 'package:tweet_up/screens/authenticate/login.dart';
 import 'package:tweet_up/screens/authenticate/sign_up.dart';
@@ -13,24 +17,57 @@ import 'package:tweet_up/screens/views/role.dart';
 import 'package:tweet_up/screens/views/Teacher-Module/subject_class.dart';
 import 'package:tweet_up/screens/views/Student-Module/subject_class_student.dart';
 import 'package:tweet_up/services/auth.dart';
+import 'package:tweet_up/services/firestore_service.dart';
 import 'package:tweet_up/util/bottom_app_bar.dart';
 import 'Bloc-Patteren/theme_state.dart';
+import 'firebase_options.dart';
 import 'screens/views/Student-Module/created_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-Future<void> _firebaseBackgroundMessageHandler(RemoteMessage message) async {
-  debugPrint("............Handle background messages ${message.messageId}/...........");
+void notificationListening() {
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    debugPrint('on foreground called...... ${message.data}, ${message.notification}');
+    if (message.notification != null) {
+      RemoteNotification? remoteNotification = message.notification;
+      debugPrint('on foreground called. message body: ${message.notification?.body}');
+      if(message.data['type'] == 'personalChat') {
+        NotificationService.showChatNotifications(
+            remoteNotification!,
+            '${message.data['photo']}'
+        );
+      }
+    }
+  });
+}
+
+@pragma('entry-point')
+Future<void> _onBackGroundMessaging(RemoteMessage message) async {
+  if (kDebugMode) {
+    print("Handling a background message: ${message.messageId}");
+    print('Message data: ${message.data}');
+    print('Message notification: ${message.notification?.title}');
+    print('Message notification: ${message.notification?.body}');
+    print('Message Type: ${message.data['type']}');
+  }
+}
+
+@pragma('vm:entry-point')
+Future<void> myBackgroundHandler(NotificationResponse notification) async {
+  if(notification.payload != null){
+    log('payload is===> ${notification.payload}');
+  }
 }
 
 Future<void> main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  NotificationService.init();
+  FirebaseMessaging.onBackgroundMessage(_onBackGroundMessaging);
+  notificationListening();
   await FirebaseMessaging.instance.getInitialMessage();
-  FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundMessageHandler);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

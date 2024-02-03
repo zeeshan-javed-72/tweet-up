@@ -21,29 +21,8 @@ class ClassDatabase {
       'code': code,
       "emailId": emailId,
       "enrolledStudents": [],
-     "enrolledStudentsId": [],
+      "enrolledStudentsId": [],
     });
-   // teacherClass.doc(code).collection("assignments").add({
-   //
-   // });
-   // teacherClass.doc(code).collection("notes").add({
-   //   'topic': "",
-   //   'url': "urlFile",
-   //   'time': DateTime.now(),
-   // });
-   // teacherClass.doc(code).collection("groupChat").add({
-   //   'postedBy': "postedBy",
-   //   'post': "post",
-   //   "senderName": "senderName",
-   //   'time': DateTime.now(),
-   // });
-   // teacherClass.doc(code).collection("upComingClasses").add({
-   //   'url': "url",
-   //   'topics': "topics",
-   //   'time': "time.toString()",
-   //   'date': "date.toString()",
-   //   "nowDate": DateTime.now(),
-   // });
 
   }catch(e){
     print(e.toString());
@@ -57,6 +36,7 @@ class ClassDatabase {
       'post': post,
       "senderName": senderName,
       'time': DateTime.now(),
+      'status': 'unread',
     });
   }
 

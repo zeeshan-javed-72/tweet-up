@@ -42,7 +42,7 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
 
   TimeOfDay _time = TimeOfDay.now();
 
-  Future<Null> selectTime(context) async {
+  Future<void> selectTime(context) async {
     _time = TimeOfDay.now();
     TimeOfDay? picked =
         await showTimePicker(context: context, initialTime: _time);
@@ -61,7 +61,7 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
 
   final topics = TextEditingController();
   String mToken = 'ok';
-  FirestoreService firestoreService = FirestoreService();
+  NotificationService firestoreService = NotificationService();
   void getToken() async {
     await FirebaseMessaging.instance.getToken().then((token) {
       if (token!.isNotEmpty) {
@@ -79,8 +79,8 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
   @override
   void initState() {
     super.initState();
-    FirestoreService.requestPermission(context);
-    FirestoreService.initInfo(context);
+    NotificationService.requestPermission(context);
+    NotificationService.initInfo(context);
     getToken();
   }
 
@@ -176,10 +176,10 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
                                                   .doc(FirebaseAuth.instance.currentUser?.email)
                                                   .get();
                                           String token = snapshot['token'];
-                                         await FirestoreService.sendPushNotification(
+                                         await NotificationService.sendPushNotification(
                                             title: url.text.toString(),
                                             body: topics.text.toString(),
-                                            token: token,
+                                           fcmToken: []
                                           );
                                           setState(() {
                                             url.clear();

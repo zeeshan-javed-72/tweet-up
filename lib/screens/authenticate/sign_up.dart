@@ -36,13 +36,14 @@ class _RegisterState extends State<Register> {
               children: [
                 SizedBox(height: 50*h),
                 Image.asset(
-                  Assets.imagesAppLogo,
+                  Assets.assetsImagesAppIcon,
                   height: 150*h,
                   width: 150*w,
                 ),
                 SizedBox(height: 50*h),
                 CustomTextField(
                   contrroller: nameC,
+                  keyboardInputType: TextInputType.name,
                   hintText: "Name",
                   validator: (v) {
                     if (v == null || v == "") {
@@ -51,10 +52,10 @@ class _RegisterState extends State<Register> {
                   },
                 ),
                 SizedBox(height: 8*h),
-
                 CustomTextField(
                   contrroller: phone,
                   hintText: "Phone Number",
+                  keyboardInputType: TextInputType.phone,
                   textInputAction: TextInputAction.next,
                   validator: (v) {
                     if (v == null || v == "") {
@@ -70,6 +71,7 @@ class _RegisterState extends State<Register> {
                   builder: (context, provider, child) {
                     return CustomTextField(
                       contrroller: emailC,
+                      keyboardInputType: TextInputType.emailAddress,
                       hintText: "Email",
                       errorMessage: provider.registerEmailError,
                       onChange: (v) {
@@ -91,6 +93,7 @@ class _RegisterState extends State<Register> {
                   builder: (context, provider, child) {
                     return CustomTextField(
                       contrroller: pass,
+                      keyboardInputType: TextInputType.visiblePassword,
                       hintText: "Password",
                       errorMessage: provider.registerPasswordError,
                       textInputAction: TextInputAction.next,
@@ -114,7 +117,6 @@ class _RegisterState extends State<Register> {
                     );
                   },
                 ),
-
                 SizedBox(height: 40*h),
                 Row(
                   children: [

@@ -10,13 +10,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:tweet_up/main.dart';
 import 'package:tweet_up/services/token_model.dart';
 import 'package:tweet_up/services/user_model.dart';
 import '../util/utils.dart';
 
 import 'message_model.dart';
 
-class FirestoreService {
+class NotificationService {
   User? user = FirebaseAuth.instance.currentUser;
   final CollectionReference _usersCollectionReference =
       FirebaseFirestore.instance.collection('users');
@@ -237,13 +239,13 @@ class FirestoreService {
     });
   }
 
-  static Future<void> sendPushNotification({title, body, token}) async {
+  static Future<void> sendPushNotification({title, body,required List<String> fcmToken,String? profile}) async {
     try {
       await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
           headers: <String, String>{
             HttpHeaders.contentTypeHeader: 'application/json',
             HttpHeaders.authorizationHeader:
-                "key=AAAAAxXdjLA:APA91bFrPCaRHn_FWS-MgVMvviegkEmyPlzUpDx_7qL7U80ugZufV5wmkLetXwjfIAJNDbOOLz01JK_MCnCK7Z0bUMK-bGz8u4dH8Hy-KnoV6HLSaiEDLYsiAdkGZSYsLsZiSst1KebS",
+                "key=AAAAQetlVCI:APA91bG60TAGfRbnVi1d5DdHL07C6U_2jssCurCZ5bhbPaBJkEQhD4h5kYggCsuYjeTZkI0ZQmudc4K1hwfO7lxvLrZVRaUWHTcdN_W5XzRanVAcSYuuFnC4LCwjmUbvdJVTnOyvDrK7",
           },
           body: jsonEncode(
             {
@@ -251,15 +253,19 @@ class FirestoreService {
               'data': {
                 'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                 'status': 'done',
+                'type': 'personalChat',
                 'body': body,
                 'title': title,
+                'photo': (profile == null || profile == 'null')
+                    ? 'https://firebasestorage.googleapis.com/v0/b/dring-389312.appspot.com/o/profile.png?alt=media&token=00636dbd-09fd-4d0a-ac29-6c86a2e0ff52'
+                    : profile,
               },
               "notification": {
                 "title": title,
                 "body": body,
                 "android_channel_id": "tweet-up",
               },
-              "to": token,
+              'registration_ids': fcmToken
             },
           ));
     } catch (e) {
@@ -270,116 +276,69 @@ class FirestoreService {
     }
   }
 
-//  joinMeeting(context,String? meetingIdController, String? passwordController, nameId) async{
-//    bool isMeetingEnded(String status) {
-//      var result = false;
-//      if (Platform.isAndroid) {
-//        result = status == "MEETING_STATUS_DISCONNECTING" || status == "MEETING_STATUS_FAILED";
-//      } else {
-//        result = status == "MEETING_STATUS_IDLE";
-//      }
-//      return result;
-//    }
-//    if(meetingIdController!.isNotEmpty && passwordController!.isNotEmpty){
-//      ZoomOptions zoomOptions =  ZoomOptions(
-//        domain: 'zoom.us',
-//        appKey: "TiYuaGgEEOMkTUclfr33bs3wv6GJZHXc2Fos",
-//        appSecret: "LWSK90GW8nz29NueCQ8qCWbCyzJiYaKroXAX",
-//      );
-//      var meetingOptions =  ZoomMeetingOptions(
-//          userId: nameId, //pass username for join meeting only --- Any name eg:- EVILRATT.
-//          meetingId: meetingIdController, //pass meeting id for join meeting only
-//          meetingPassword: passwordController, //pass meeting password for join meeting only
-//          disableDialIn: "true",
-//          disableDrive: "true",
-//          disableInvite: "true",
-//          disableShare: "true",
-//          disableTitlebar: "false",
-//          viewOptions: "true",
-//          noAudio: "false",
-//          noDisconnectAudio: "false"
-//      );
-//      var zoom = ZoomView();
-//      zoom.initZoom(zoomOptions).then((value){
-//        if(value[0] == 0){
-//          zoom.onMeetingStatus().listen((event) {
-//            if (isMeetingEnded(event[0])) {
-//              if (kDebugMode) {
-//                print("[Meeting Status] :- Ended");
-//              }
-//              Timer.periodic(const Duration(seconds: 0), (timer) { });
-//            }
-//          });
-//          zoom.joinMeeting(meetingOptions).then((joinMeetingResult){
-//            Timer.periodic(const Duration(seconds: 1), (timer) {
-//              zoom.meetingStatus(meetingOptions.meetingId!).then((value){
-//                if (kDebugMode) {
-//                  print("${"[Meeting Status Polling] : " + value[0]} - " + value[1]);
-//                }
-//              });
-//            });
-//          });
-//        }
-//      }).catchError((error){print(error.toString());
-//      });
-//    }else{
-//      ScaffoldMessenger.of(context).showSnackBar(
-//          const SnackBar(
-//        content: Text("Enter a meeting password to start."),
-//      ));
-//    }
-//  }
 
-  // startMeeting(context, ) {
-  //   bool _isMeetingEnded(String status) {
-  //     var result = false;
+  static void init() async{
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+    const initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initializationSettingsIOS = DarwinInitializationSettings();
+    const initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveBackgroundNotificationResponse: myBackgroundHandler,
+      onDidReceiveNotificationResponse: myBackgroundHandler,
+    );
+  }
+  static Future<String> _downloadAndSaveFile(
+      String url, String fileName) async {
+    final Directory directory = await getApplicationDocumentsDirectory();
+    final String filePath = '${directory.path}/$fileName';
+    final http.Response response = await http.get(Uri.parse(url));
+    final File file = File(filePath);
+    await file.writeAsBytes(response.bodyBytes);
+    return filePath;
+  }
+  static void showChatNotifications(
+      RemoteNotification remoteNotification, String profile) async {
+    final String largeIconPath =
+    await _downloadAndSaveFile(profile, 'largeIcon');
+    AndroidNotificationDetails androidNotificationDetails =
+    AndroidNotificationDetails(
+      'tweet-up',
+      'tweet-up',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+      category: AndroidNotificationCategory.message,
+      setAsGroupSummary: true,
+      groupAlertBehavior: GroupAlertBehavior.summary,
+      icon: 'app_notification',
+      enableLights: true,
+      largeIcon: FilePathAndroidBitmap(largeIconPath),
+    );
 
-  //     if (Platform.isAndroid)
-  //       result = status == "MEETING_STATUS_DISCONNECTING" || status == "MEETING_STATUS_FAILED";
-  //     else
-  //       result = status == "MEETING_STATUS_IDLE";
-
-  //     return result;
-  //   }
-  //   ZoomOptions zoomOptions = ZoomOptions(
-  //     domain: 'zoom.us',
-  //     appKey: "TiYuaGgEEOMkTUclfr33bs3wv6GJZHXc2Fos",
-  //     appSecret: "LWSK90GW8nz29NueCQ8qCWbCyzJiYaKroXAX",//API SECRET FROM ZOOM - Sdk API Secret
-  //   );
-  //   var meetingOptions =  ZoomMeetingOptions(
-  //       userId: 'asliscammer420@gmail.com', //pass host email for zoom
-  //       userPassword: 'mehrozhassan', //pass host password for zoom
-  //       disableDialIn: "false",
-  //       disableDrive: "false",
-  //       disableInvite: "false",
-  //       disableShare: "false",
-  //       disableTitlebar: "false",
-  //       viewOptions: "false",
-  //       noAudio: "false",
-  //       noDisconnectAudio: "false"
-  //   );
-
-  //   var zoom = ZoomView();
-  //   zoom.initZoom(zoomOptions).then((results){
-  //     if(results[0] == 0){
-  //       zoom.onMeetingStatus().listen((event) {
-  //         zoom.startMeeting(meetingOptions).then((loginResult) {
-  //           print("${"[LoginResult] :- " + loginResult[0]} - " + loginResult[1]);
-  //           if(loginResult[0] == "SDK ERROR"){
-  //             //SDK INIT FAILED
-  //             print((loginResult[1]).toString());
-  //           }else if(loginResult[0] == "LOGIN ERROR"){
-  //             //LOGIN FAILED - WITH ERROR CODES
-  //             print((loginResult[1]).toString());
-  //           }else{
-  //             //LOGIN SUCCESS & MEETING STARTED - WITH SUCCESS CODE 200
-  //             print((loginResult[0]).toString());
-  //           }
-  //         });
-  //       }
-
-  //       );
-  //     }
-  //   });
-  //}
+    DarwinNotificationDetails iOSNotificationDetails =
+    const DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      sound: 'message.aiff',
+    );
+    NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+      iOS: iOSNotificationDetails,
+    );
+    await flutterLocalNotificationsPlugin.show(
+      remoteNotification.hashCode,
+      remoteNotification.title,
+      remoteNotification.body,
+      notificationDetails,
+    );
+  }
 }

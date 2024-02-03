@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 10 * h,
                   ),
                   Image.asset(
-                    Assets.imagesAppLogo,
+                    Assets.assetsImagesAppIcon,
                     width: 120 * w,
                   ),
                   SizedBox(height: 60 * h),
