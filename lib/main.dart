@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tweet_up/Bloc-Patteren/theme_cubit.dart';
+import 'package:tweet_up/Model-View_Classes/classes_view_model.dart';
 import 'package:tweet_up/screens/authenticate/login.dart';
 import 'package:tweet_up/screens/authenticate/sign_up.dart';
 import 'package:tweet_up/screens/views/Teacher-Module/create_class.dart';
@@ -73,7 +74,10 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_)=> ClassesViewModel()),
+  ],
+  child: const MyApp()));
 }
 
 Map<int, Color> color = {

@@ -1,6 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -160,6 +164,20 @@ class AuthViewModel extends ChangeNotifier{
   }
 
 
+  Future<String> uploadUserImage(File userImg) async{
+    try{
+      var timeStamp = Timestamp.now().millisecondsSinceEpoch;
+      FirebaseStorage storage = FirebaseStorage.instance;
+      await storage.ref("profiles/$timeStamp").putFile(userImg);
+      String? downloadUrl = await storage.ref("profiles/$timeStamp").getDownloadURL();
+      notifyListeners();
+      return downloadUrl.toString();
+    } on FirebaseAuthException catch(e){
+      debugPrint('Error: ${e.code}');
+    }
+    return '';
+  }
+
   String? _registerPasswordError;
   String? get registerPasswordError => _registerPasswordError;
 
@@ -177,16 +195,26 @@ class AuthViewModel extends ChangeNotifier{
   }
 
  UserCredential? userCredential;
-  Future<UserCredential?> signUp(String email, String password, String name, var phone, BuildContext context) async {
+  Future<UserCredential?> signUp(
+      String email,
+      String password,
+      String name,
+      var phone,
+      File userImage,
+      BuildContext context) async {
     try {
       setRegisterLoading(true);
       userCredential = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).set({
-        "name": name,
-        "email": email,
-        "password": password,
-        "phone": phone,
+        await uploadUserImage(userImage).then((img) async {
+        await FirebaseFirestore.instance.collection("users")
+            .doc(FirebaseAuth.instance.currentUser!.uid).set({
+          "name": name,
+          "email": email,
+          "password": password,
+          "phone": phone,
+          'userImage': img.toString(),
+        });
       });
       User? user = userCredential?.user;
       await user?.sendEmailVerification();

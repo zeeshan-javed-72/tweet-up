@@ -26,6 +26,7 @@ class JoinClass extends StatefulWidget {
 
 class _JoinClassState extends State<JoinClass> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  User? user = FirebaseAuth.instance.currentUser;
 
   TextEditingController rollNum = TextEditingController();
 
@@ -61,13 +62,28 @@ class _JoinClassState extends State<JoinClass> {
   }
 
   final name = TextEditingController();
-  String message = ' ';
+  String message = '';
+  String userName = '';
+  String userImage = '';
   bool _loading = false;
 
-  bool? _isValidInput;
-  bool validateRollNumber(String input) {
-    RegExp regex = RegExp(r'^[A-Z]{5}-\d{2}-\d{2}$');
-    return regex.hasMatch(input);
+  void getMyData(){
+    FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots()
+        .listen((event) {
+      userName = event['name'];
+      userImage = event['userImage'];
+    });
+  }
+
+  @override
+  void initState() {
+    getMyData();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -128,7 +144,12 @@ class _JoinClassState extends State<JoinClass> {
                                     _loading = true;
                                   });
                                   await ClassDatabase.joinClass(
-                                          rollNum.text, code.text, context)
+                                          rollNum.text,
+                                      code.text,
+                                      context,
+                                      studentName: userName,
+                                      userImg: userImage,
+                                  )
                                       .then((value) {
                                     setState(() {
                                       _loading = false;

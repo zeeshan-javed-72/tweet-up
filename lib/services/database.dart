@@ -86,7 +86,7 @@ class ClassDatabase {
     }
   }
 
-  static Future joinClass(var rollNumber, String code, context) async{
+  static Future joinClass(var rollNumber, String code, context,{String? studentName,userImg}) async{
 
       var allClasses = FirebaseFirestore.instance.collection('classes');
       final classDoc = await allClasses.doc(code).get();
@@ -96,20 +96,24 @@ class ClassDatabase {
       if(enrolledStudents.any((student) => student['studentId'] == FirebaseAuth.instance.currentUser!.uid)){
           Utils.snackBar(message: "You are already enrolled in this class",
               context: context, color: Colors.redAccent);
-          print('Error: Student already enrolled in this class.');
           return;
       }
       if (FirebaseAuth.instance.currentUser!.uid == teacherId) {
         Utils.snackBar(message: "Error: Teacher cannot enroll in their own class.",
             context: context, color: Colors.redAccent);
-        print('Error: Teacher cannot enroll in their own class.');
         return;
       }
-      enrolledStudents.add({'studentId': FirebaseAuth.instance.currentUser?.uid, 'rollNo': rollNumber});
-      enrolledStudentsId.add(FirebaseAuth.instance.currentUser?.uid);
-      allClasses.doc(code).update({'enrolledStudents': enrolledStudents});
-      allClasses.doc(code).update({'enrolledStudentsId': enrolledStudentsId});
-      print('Student enrolled successfully.');
+      await enrolledStudents.add({
+        'studentId': FirebaseAuth.instance.currentUser?.uid,
+        'rollNo': rollNumber,
+        'stdName': studentName,
+        'stdImg': userImg,
+      });
+      await enrolledStudentsId.add(FirebaseAuth.instance.currentUser?.uid);
+      await allClasses.doc(code).update({'enrolledStudents': enrolledStudents});
+      await allClasses.doc(code).update({'enrolledStudentsId': enrolledStudentsId});
+      Utils.snackBar(message: "Class joined successfully",
+          context: context, color: Colors.redAccent);
   }
 
   final CollectionReference teacher;
@@ -130,12 +134,12 @@ class ClassDatabase {
       'batch': batch,
       'code': code,
       'studentList': studentList
-    }).then((value) {
+    }).then((value) async {
       final classCollection = FirebaseFirestore.instance.collection(code);
-      classCollection.doc('Announcements').set({});
-      classCollection.doc('assignments').set({});
-      classCollection.doc('Upcoming classes').set({});
-      classCollection.doc('Name').set({'name': subjectName});
+     await classCollection.doc('Announcements').set({});
+      await  classCollection.doc('assignments').set({});
+      await classCollection.doc('Upcoming classes').set({});
+      await classCollection.doc('Name').set({'name': subjectName});
       if (kDebugMode) {
         print("User Added");
       }

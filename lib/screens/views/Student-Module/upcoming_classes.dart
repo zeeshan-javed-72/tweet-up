@@ -39,9 +39,7 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
       });
     }
   }
-
   TimeOfDay _time = TimeOfDay.now();
-
   Future<void> selectTime(context) async {
     _time = TimeOfDay.now();
     TimeOfDay? picked =
@@ -54,196 +52,175 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
       print(_time);
     }
   }
-
   final url = TextEditingController();
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   final topics = TextEditingController();
   String mToken = 'ok';
   NotificationService firestoreService = NotificationService();
-  void getToken() async {
-    await FirebaseMessaging.instance.getToken().then((token) {
-      if (token!.isNotEmpty) {
-        setState(() {
-          mToken = token;
-          firestoreService.saveToke(token);
-          if (kDebugMode) {
-            print("my Device Toke$token");
-          }
-        });
-      }
-    });
-  }
+  void getToken() async {}
 
   @override
   void initState() {
     super.initState();
-    NotificationService.requestPermission(context);
-    NotificationService.initInfo(context);
     getToken();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (kDebugMode) {
-      print(mToken);
-    }
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.classData['subName'].toString(),
+        title: Text(
+          widget.classData['subName'].toString(),
           style: TextStyle(color: Theme.of(context).colorScheme.secondary),
         ),
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
+        iconTheme:
+            IconThemeData(color: Theme.of(context).colorScheme.secondary),
         backgroundColor: Colors.white,
       ),
-            body: SingleChildScrollView(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height -
-                    kBottomNavigationBarHeight -
-                    AppBar().preferredSize.height,
-                child: Column(
-                  children: [
-                    Text(
-                      msg,
-                      style: GoogleFonts.questrial(
-                        fontSize: 15.0,
-                        color: Colors.black,
-                        wordSpacing: 2.5,
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height -
+              kBottomNavigationBarHeight -
+              AppBar().preferredSize.height,
+          child: Column(
+            children: [
+              Text(
+                msg,
+                style: GoogleFonts.questrial(
+                  fontSize: 15.0,
+                  color: Colors.black,
+                  wordSpacing: 2.5,
+                ),
+              ),
+              Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      formField(
+                          controller: url,
+                          title: 'Meeting url',
+                          context: context),
+                      formField(
+                          controller: topics,
+                          title: 'Lecture topic',
+                          context: context),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: TextButton(
+                          onPressed: () => _selectDate(context),
+                          child: Text(
+                            'Selected date ${"${selectedDate.toLocal()}".split(' ')[0]}',
+                          ),
+                        ),
                       ),
-                    ),
-                    Form(
-                      key: _formKey,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: TextButton(
+                          onPressed: () => selectTime(context),
+                          child: Text(_time == null
+                              ? 'Selected time'
+                              : 'Selected time${_time.format(context)}'),
+                        ),
+                      ),
+                      Builder(builder: (context) {
+                        return Row(
                           children: [
-                            formField(
-                                controller: url,
-                                title: 'Meeting url',
-                                context: context),
-                            formField(
-                                controller: topics,
-                                title: 'Lecture topic',
-                                context: context),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.8,
+                            Expanded(
                               child: TextButton(
-                                onPressed: () => _selectDate(context),
-                                child: Text(
-                                  'Selected date ${"${selectedDate.toLocal()}".split(' ')[0]}',
+                                style: TextButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                ),
+                                onPressed: () async {
+                                  setState(() {
+                                    _loading = true;
+                                  });
+                                  if (_formKey.currentState!.validate()) {
+                                    subCollName = topics.text;
+                                    await ClassDatabase.nextClass(
+                                      widget.classData['code'],
+                                      url.text,
+                                      topics.text,
+                                      _time.toString(),
+                                      selectedDate.toLocal(),
+                                    );
+                                    DocumentSnapshot snapshot =
+                                        await FirebaseFirestore.instance
+                                            .collection('users')
+                                            .doc(FirebaseAuth
+                                                .instance.currentUser?.email)
+                                            .get();
+                                    String token = snapshot['token'];
+                                    await NotificationService
+                                        .sendPushNotification(
+                                            title: url.text.toString(),
+                                            body: topics.text.toString(),
+                                            fcmToken: []);
+                                    setState(() {
+                                      url.clear();
+                                      topics.clear();
+                                      _loading = false;
+                                    });
+                                  } else {
+                                    Utils.snackBar(
+                                        message:
+                                            "scheduled class cant be empty",
+                                        context: context,
+                                        color: Colors.redAccent);
+                                  }
+                                },
+                                child: const Text(
+                                  'Schedule class',
+                                  style: TextStyle(color: Colors.white),
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.8,
+                          ],
+                        );
+                      }),
+                      Builder(builder: (context) {
+                        return Row(
+                          children: [
+                            Expanded(
                               child: TextButton(
-                                onPressed: () => selectTime(context),
-                                child: Text(_time == null
-                                    ? 'Selected time'
-                                    : 'Selected time${_time.format(context)}'),
+                                style: TextButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ScheduledClasses(
+                                            widget.classData, subCollName)),
+                                  );
+                                },
+                                child: const Text(
+                                  'View scheduled classes',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
                             ),
-                            Builder(builder: (context) {
-                              return Row(
-                                children: [
-                                  Expanded(
-                                    child: TextButton(
-                                      style: TextButton.styleFrom(
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                      ),
-                                      onPressed: () async {
-                                        setState(() {
-                                          _loading = true;
-                                        });
-                                        if (_formKey.currentState!.validate()) {
-                                          subCollName = topics.text;
-                                          await ClassDatabase.nextClass(
-                                            widget.classData['code'],
-                                            url.text,
-                                            topics.text,
-                                            _time.toString(),
-                                            selectedDate.toLocal(),
-                                          );
-                                          DocumentSnapshot snapshot =
-                                              await FirebaseFirestore.instance
-                                                  .collection('users')
-                                                  .doc(FirebaseAuth.instance.currentUser?.email)
-                                                  .get();
-                                          String token = snapshot['token'];
-                                         await NotificationService.sendPushNotification(
-                                            title: url.text.toString(),
-                                            body: topics.text.toString(),
-                                           fcmToken: []
-                                          );
-                                          setState(() {
-                                            url.clear();
-                                            topics.clear();
-                                            _loading = false;
-                                          });
-                                        } else {
-                                          Utils.snackBar(
-                                              message:
-                                                  "scheduled class cant be empty",
-                                              context: context,
-                                              color: Colors.redAccent);
-                                        }
-                                      },
-                                      child: const Text(
-                                        'Schedule class',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }),
-                            Builder(builder: (context) {
-                              return Row(
-                                children: [
-                                  Expanded(
-                                    child: TextButton(
-                                      style: TextButton.styleFrom(
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ScheduledClasses(
-                                                      widget.classData,
-                                                      subCollName)),
-                                        );
-                                      },
-                                      child: const Text(
-                                        'View scheduled classes',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }),
                           ],
-                        ),
-                      ),
-                    ),
-                  ],
+                        );
+                      }),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

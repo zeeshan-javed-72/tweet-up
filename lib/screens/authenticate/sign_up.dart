@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tweet_up/Model-View_Classes/classes_view_model.dart';
 import 'package:tweet_up/generated/assets.dart';
 import 'package:tweet_up/screens/authenticate/login.dart';
 import 'package:tweet_up/services/auth.dart';
@@ -26,6 +29,7 @@ class _RegisterState extends State<Register> {
     final h = MediaQuery.of(context).size.height/812;
     final w = MediaQuery.of(context).size.width/375;
     final textSize = MediaQuery.textScaleFactorOf(context);
+    final appNotifier = Provider.of<ClassesViewModel>(context);
     return Scaffold(
       body: Form(
         key: _formKey,
@@ -35,10 +39,28 @@ class _RegisterState extends State<Register> {
             child: Column(
               children: [
                 SizedBox(height: 50*h),
-                Image.asset(
-                  Assets.assetsImagesAppIcon,
-                  height: 150*h,
-                  width: 150*w,
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundColor: Colors.grey,
+                      backgroundImage: appNotifier.img != null? Image.file(appNotifier.img!).image : null,
+                    ),
+                    Positioned(
+                      bottom: -5,
+                      right: 0,
+                      child: IconButton(
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          elevation: 12
+                           ),
+                          onPressed: (){
+                          appNotifier.pickImage();
+                          },
+                          icon: const Icon(Icons.camera),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 50*h),
                 CustomTextField(
@@ -127,8 +149,15 @@ class _RegisterState extends State<Register> {
                             padding: EdgeInsets.zero,
                             color: Theme.of(context).primaryColor,
                             onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                provider.signUp(emailC.text.trim(), pass.text.trim(), nameC.text, phone.text,  context);
+                              if (_formKey.currentState!.validate() && appNotifier.img != null) {
+                              await provider.signUp(
+                                    emailC.text.trim(),
+                                    pass.text.trim(),
+                                    nameC.text,
+                                    phone.text,
+                                    appNotifier.img!,
+                                    context,
+                                );
                               } else {
 
                               }

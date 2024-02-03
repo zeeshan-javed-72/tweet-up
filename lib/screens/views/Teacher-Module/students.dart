@@ -32,7 +32,6 @@ class _StudentsState extends State<Students> {
             AppBar().preferredSize.height,
         child: Column(
           children: [
-            // UserInfo(imgURL: imgURL, user: user, classData: classData),
             const Padding(
               padding: EdgeInsets.only(
                 bottom: 10,
@@ -264,212 +263,174 @@ class _ListOfStudentsState extends State<ListOfStudents> {
           .collection("classes")
           .doc(widget.classData['code'])
           .snapshots(),
-      builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
           return const Text('Something went wrong');
+          }
+        if (!snapshot.hasData) {
+          return const Center(child: Text("Loading"));
         }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Text("Loading");
-        }
-
         return ListView.builder(
             itemCount: snapshot.data!['enrolledStudents'].length,
             itemBuilder: (context, index) {
               return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(12),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                child: ListTile(
+                  dense: true,
+                  tileColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)
                   ),
-                  child: ListTile(
-                    title: Text(
-                      FirebaseAuth.instance.currentUser!.displayName.toString(),
-                      maxLines: 1,
-                      style: const TextStyle(color: Colors.black),
+                  title: Text(
+                    snapshot.data?['enrolledStudents'][index]['stdName']??'Noname',
+                    maxLines: 1,
+                    style: TextStyle(
+                        color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: GoogleFonts.inter().fontFamily,
                     ),
-                    subtitle: Text(
-                      "${snapshot.data!['enrolledStudents'][index]['rollNo']}",
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        GestureDetector(
-                          onTap: () async {
-                            final mailtoLink = Mailto(
-                                // to: [email],
-                                // cc: ['cc1@example.com', 'cc2@example.com'],
-                                // subject: 'mailto example subject',
-                                // body: 'mailto example body',
-                                );
-                            // Convert the Mailto instance into a string.
-                            // Use either Dart's string interpolation
-                            // or the toString() method.
-                            await launch('mail:$mailtoLink');
-                          },
-                          child: Icon(
-                            Icons.email,
-                            color: Theme.of(context).primaryColor,
-                          ),
+                  ),
+                  subtitle: Text(
+                    "${snapshot.data?['enrolledStudents'][index]['rollNo']}",
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          final mailtoLink = Mailto(
+                              // to: [email],
+                              // cc: ['cc1@example.com', 'cc2@example.com'],
+                              // subject: 'mailto example subject',
+                              // body: 'mailto example body',
+                              );
+                          // Convert the Mailto instance into a string.
+                          // Use either Dart's string interpolation
+                          // or the toString() method.
+                          await launch('mail:$mailtoLink');
+                        },
+                        child: Icon(
+                          Icons.email,
+                          color: Theme.of(context).primaryColor,
                         ),
-                        PopupMenuButton(
-                            // icon: Icon(Icons.highlight_remove),
-                            itemBuilder: (ctx) => [
-                                  PopupMenuItem(
-                                    onTap: () {
-                                      Future.delayed(
-                                          const Duration(microseconds: 0),
-                                          () => showDialog(
-                                              barrierDismissible: true,
-                                              useSafeArea: true,
-                                              context: context,
-                                              builder: (ctx) => Container(
-                                                    width: 300,
-                                                    height: 100,
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  8)),
-                                                    ),
-                                                    child: BackdropFilter(
-                                                      filter: ImageFilter.blur(
-                                                          sigmaX: 6, sigmaY: 6),
-                                                      child:
-                                                          CupertinoAlertDialog(
-                                                        title: const Text(
-                                                            "Alert Box"),
-                                                        content: Wrap(
-                                                          children: const [
-                                                            Text(
-                                                                "Do You Want to remove "),
-                                                            Text("from class"),
-                                                          ],
-                                                        ),
-                                                        actions: [
-                                                          TextButton(
-                                                            onPressed: () {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            },
-                                                            child: const Text(
-                                                                "Cancel"),
-                                                          ),
-                                                          TextButton(
-                                                              onPressed:
-                                                                  () async {
-                                                                await FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        "classes")
-                                                                    .doc(widget
-                                                                            .classData[
-                                                                        'code'])
-                                                                    .update({
-                                                                  "enrolledStudentsId":
-                                                                      FieldValue
-                                                                          .arrayRemove([
-                                                                    snapshot.data![
-                                                                            'enrolledStudentsId']
-                                                                        [index],
-                                                                  ]),
-                                                                });
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        "classes")
-                                                                    .doc(widget
-                                                                            .classData[
-                                                                        'code'])
-                                                                    .update({
-                                                                  "enrolledStudents":
-                                                                      FieldValue
-                                                                          .arrayRemove([
-                                                                    snapshot.data![
-                                                                            'enrolledStudents']
-                                                                        [index],
-                                                                  ]),
-                                                                }).then((value) {
-                                                                  Navigator.pop(
-                                                                      context);
-                                                                  Utils.snackBar(
-                                                                      message:
-                                                                          "Student removed",
-                                                                      context:
-                                                                          context,
-                                                                      color: AppColors
-                                                                          .errorColor);
-                                                                });
-                                                              },
-                                                              child: const Text(
-                                                                  "Remove")),
+                      ),
+                      PopupMenuButton(
+                          // icon: Icon(Icons.highlight_remove),
+                          itemBuilder: (ctx) => [
+                                PopupMenuItem(
+                                  onTap: () {
+                                    Future.delayed(
+                                        const Duration(microseconds: 0),
+                                        () => showDialog(
+                                            barrierDismissible: true,
+                                            useSafeArea: true,
+                                            context: context,
+                                            builder: (ctx) => Container(
+                                                  width: 300,
+                                                  height: 100,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                8)),
+                                                  ),
+                                                  child: BackdropFilter(
+                                                    filter: ImageFilter.blur(
+                                                        sigmaX: 6, sigmaY: 6),
+                                                    child:
+                                                        CupertinoAlertDialog(
+                                                      title: const Text(
+                                                          "Alert Box"),
+                                                      content: const Wrap(
+                                                        children: [
+                                                          Text(
+                                                              "Do You Want to remove "),
+                                                          Text("from class"),
                                                         ],
                                                       ),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                          child: const Text(
+                                                              "Cancel"),
+                                                        ),
+                                                        TextButton(
+                                                            onPressed:
+                                                                () async {
+                                                              await FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      "classes")
+                                                                  .doc(widget
+                                                                          .classData[
+                                                                      'code'])
+                                                                  .update({
+                                                                "enrolledStudentsId":
+                                                                    FieldValue
+                                                                        .arrayRemove([
+                                                                  snapshot.data![
+                                                                          'enrolledStudentsId']
+                                                                      [index],
+                                                                ]),
+                                                              });
+                                                              FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      "classes")
+                                                                  .doc(widget
+                                                                          .classData[
+                                                                      'code'])
+                                                                  .update({
+                                                                "enrolledStudents":
+                                                                    FieldValue
+                                                                        .arrayRemove([
+                                                                  snapshot.data![
+                                                                          'enrolledStudents']
+                                                                      [index],
+                                                                ]),
+                                                              }).then((value) {
+                                                                Navigator.pop(
+                                                                    context);
+                                                                Utils.snackBar(
+                                                                    message:
+                                                                        "Student removed",
+                                                                    context:
+                                                                        context,
+                                                                    color: AppColors
+                                                                        .errorColor);
+                                                              });
+                                                            },
+                                                            child: const Text(
+                                                                "Remove")),
+                                                      ],
                                                     ),
-                                                  )));
-                                      // showAlertDialogBox(context);
-                                      if (kDebugMode) {
-                                        print('PopUp menu pressed');
-                                      }
-                                    },
-                                    value: 1,
-                                    child: const Text("Remove student"),
-                                  )
-                                ]),
-                      ],
-                    ),
-                    leading: StreamBuilder(
-                        stream: FirebaseFirestore.instance
-                            .collection("usersData")
-                            .doc(user.uid)
-                            .snapshots(),
-                        builder: (
-                          context,
-                          snapshot,
-                        ) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Container(
-                              width: 60,
-                              height: 70,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                    color: Theme.of(context).primaryColor,
-                                    width: 1),
-                              ),
-                              child: Transform.scale(
-                                  scale: 0.5,
-                                  child: const CircularProgressIndicator()),
-                            );
-                          }
-                          return Container(
-                            width: 60,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 1),
-                            ),
-                            child: Center(
-                              child: Text(
-                                "${user.displayName?.substring(0, 1)}",
-                                style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 22,
-                                    fontFamily: 'Lato'),
-                              ),
-                            ),
-                          );
-                        }),
+                                                  ),
+                                                )));
+                                    // showAlertDialogBox(context);
+                                    if (kDebugMode) {
+                                      print('PopUp menu pressed');
+                                    }
+                                  },
+                                  value: 1,
+                                  child: const Text("Remove student"),
+                                )
+                              ]),
+                    ],
+                  ),
+                  leading: Stack(
+                    children: [
+                       CircleAvatar(
+                        radius: 20,
+                        backgroundImage: Image.network('${snapshot.data?['enrolledStudents'][index]['stdImg']}').image,
+                        backgroundColor: Colors.blueAccent,
+                      ),
+                    ],
                   ),
                 ),
               );
