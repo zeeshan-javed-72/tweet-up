@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tweet_up/util/utils.dart';
 import '../models/error.dart';
 
@@ -40,12 +41,13 @@ class ClassDatabase {
     });
   }
 
-  static Future nextClass( code, url, topics,date, time,) async {
+  static Future nextClass({code, url, topics, date, time}) async {
+    DateTime selectedTime = DateTime(2022, 1, 1, time.hour, time.minute);
     var collName = FirebaseFirestore.instance.collection("classes");
     await collName.doc(code).collection('upComingClasses').doc().set({
       'url': url,
       'topics': topics,
-      'time': time.toString(),
+      'time': DateFormat('hh:mm a').format(selectedTime),
       'date': date.toString(),
       "nowDate": DateTime.now(),
     }).then((_) {

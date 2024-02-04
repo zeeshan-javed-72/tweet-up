@@ -57,10 +57,7 @@ class ScheduledClassesState extends State<ScheduledClasses> {
                                         .substring(0, 10)}',
                                 style: GoogleFonts.montserrat(fontSize: 15),
                               ),
-                              Text('Time: ${lectureData
-                                      ['time']
-                                      .toString()
-                                      .substring(10, 15)}'),
+                              Text('Time: ${lectureData['time']}'),
                               TextFormField(
                                 style: const TextStyle(color: Colors.blue),
                                 controller: url,

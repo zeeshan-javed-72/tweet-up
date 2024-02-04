@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tweet_up/screens/views/Teacher-Module/create_class.dart';
 import '../authenticate/login.dart';
@@ -25,6 +26,7 @@ class homestuState extends State<HomeStudent> {
   var currentId = FirebaseAuth.instance.currentUser!.uid;
   String userName = '';
   String emailID = '';
+  String userProfile = '';
 
   void saveFcmToken(){
    FirebaseMessaging.instance.getToken().then((fcmToken){
@@ -41,6 +43,7 @@ class homestuState extends State<HomeStudent> {
           setState(() {
             userName = value['name'];
             emailID = value['email'];
+            userProfile = value['userImage'];
           });
         }
       }
@@ -84,6 +87,7 @@ class homestuState extends State<HomeStudent> {
                           visualDensity: const VisualDensity(vertical: -4),
                           title: const Text("Create class"),
                           onTap: () {
+                            Navigator.of(context).pop('popped');
                             Navigator.of(context)
                                 .pushNamed(CreateClass.routeName);
                           },
@@ -92,6 +96,7 @@ class homestuState extends State<HomeStudent> {
                           visualDensity: const VisualDensity(vertical: -4),
                           title: const Text("Join class"),
                           onTap: () {
+                            Navigator.of(context).pop('popped');
                             Navigator.of(context)
                                 .pushNamed(JoinClass.routeName);
                           },
@@ -109,55 +114,60 @@ class homestuState extends State<HomeStudent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                UserInfo(userName: userName,emailId: emailID),
-                SizedBox(height: height * 0.03),
-                Text(
-                  "UpComing Classes",
-                  style: GoogleFonts.poppins(
-                    textStyle: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black87,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collectionGroup("upComingClasses")
-                      .where("enrolledStudentsId", arrayContains: currentId)
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return const Text('Something went wrong');
-                    }
-                    if (!snapshot.hasData) {
-                      return const Center(child: Text("Loading"));
-                    }
-                    if (snapshot.data!.size == 0) {
-                      return SizedBox(
-                          height: height * 0.07,
-                          child:
-                              const Center(child: Text("No Upcoming classes")));
-                    }
-                    return Container(
-                      height: height * 0.36,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30)),
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        shrinkWrap: true,
-                        children: snapshot.data!.docs
-                            .map((DocumentSnapshot document) {
-                              return const UpcomingClasses();
-                            })
-                            .toList()
-                            .cast(),
-                      ),
-                    );
-                  },
-                ),
+                UserInfo(userName: userName,emailId: emailID,userProfile: userProfile),
+                // SizedBox(height: height * 0.03),
+                // Text(
+                //   "UpComing Classes",
+                //   style: GoogleFonts.poppins(
+                //     textStyle: const TextStyle(
+                //         fontSize: 16,
+                //         color: Colors.black87,
+                //         fontWeight: FontWeight.bold),
+                //   ),
+                // ),
+                // StreamBuilder<QuerySnapshot>(
+                //   stream: FirebaseFirestore.instance
+                //       .collection("classes")
+                //       .where("enrolledStudentsId", arrayContains: currentId)
+                //       .snapshots(),
+                //   builder: (BuildContext context,
+                //       AsyncSnapshot<QuerySnapshot> snapshot) {
+                //     if (snapshot.hasError) {
+                //       return const Text('Something went wrong');
+                //     }
+                //     if (!snapshot.hasData) {
+                //       return const Center(child: Text("Loading"));
+                //     }
+                //     if (snapshot.data!.size == 0) {
+                //       return SizedBox(
+                //           height: height * 0.07,
+                //           child:
+                //               const Center(child: Text("No Upcoming classes")));
+                //     }
+                //     return Container(
+                //       height: height * 0.36,
+                //       width: double.infinity,
+                //       decoration: BoxDecoration(
+                //           borderRadius: BorderRadius.circular(30)),
+                //       child: ListView(
+                //         scrollDirection: Axis.horizontal,
+                //         physics: const BouncingScrollPhysics(),
+                //         shrinkWrap: true,
+                //         children: snapshot.data!.docs
+                //             .map((DocumentSnapshot document) {
+                //           DateTime dateTime = DateTime.parse(document['date']);
+                //           String formattedDate = DateFormat('dd EEEE').format(dateTime);
+                //               return UpcomingClasses(
+                //                   snapshot: document,
+                //                   meetingTime: '$formattedDate-9AM',
+                //               );
+                //             })
+                //             .toList()
+                //             .cast(),
+                //       ),
+                //     );
+                //   },
+                // ),
                 SizedBox(
                   height: height * 0.04
                 ),
@@ -213,13 +223,6 @@ class homestuState extends State<HomeStudent> {
                           height: height * 0.07,
                           child: const Center(child: Text("No Courses")));
                     }
-                    // final documents = snapshot.data!.docs.map((e) => e.data()).toList().cast();
-                    // return ListView.builder(
-                    //     shrinkWrap: true,
-                    //     itemCount: documents.length,
-                    //     itemBuilder: (context, index){
-                    //   return Text("data");
-                    // });
                     return ListView(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -273,9 +276,9 @@ class homestuState extends State<HomeStudent> {
 
 class UserInfo extends StatelessWidget {
   const UserInfo({
-    super.key, required this.emailId, required this.userName,
+    super.key, required this.emailId, required this.userName, required this.userProfile,
   });
-  final String emailId,userName;
+  final String emailId,userName,userProfile;
 
   @override
   Widget build(BuildContext context) {
@@ -301,16 +304,14 @@ class UserInfo extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                maxRadius: 50,
-                backgroundColor: Colors.white,
-                child: Text('$userName',
-                  style: TextStyle(
-                    fontSize: 36,
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.bold,
+              Stack(
+                children: [
+                  CircleAvatar(
+                    maxRadius: 50,
+                    backgroundColor: Colors.white,
+                    backgroundImage: Image.network('$userProfile').image,
                   ),
-                ),
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 10),
@@ -322,9 +323,10 @@ class UserInfo extends StatelessWidget {
                       children: [
                         Text('$userName',
                             textAlign: TextAlign.start,
-                            style: GoogleFonts.alegreya(
+                            style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
+                                color: Colors.white,
                                 fontStyle: FontStyle.italic)),
                         IconButton(
                             onPressed: () {
@@ -338,7 +340,8 @@ class UserInfo extends StatelessWidget {
                     ),
                     // SizedBox(height: 2.h,),
                     Text("$emailId",
-                        style: GoogleFonts.questrial(
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
                             fontWeight: FontWeight.bold, fontSize: 12)),
                   ],
                 ),

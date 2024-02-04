@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,6 +21,23 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
   String msg = 'Schedule a class.';
   String? subCollName;
   bool _loading = false;
+  List<String> fcmTokens = [];
+  void getUserData(){
+    fcmTokens.clear();
+    FirebaseFirestore.instance
+        .collection('users')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      for (var doc in querySnapshot.docs) {
+        if(doc.exists){
+          if(mounted){
+            setState(() => fcmTokens.add(doc['token']??''));
+          }
+          log('tokens ===> ${fcmTokens}');
+        }
+      }
+    });
+  }
   DateTime selectedDate = DateTime.now();
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -53,6 +71,7 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
   void initState() {
     super.initState();
     getToken();
+    getUserData();
   }
 
   @override
@@ -92,10 +111,20 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
                       formField(
                           controller: url,
                           title: 'Meeting url',
+                          validator: (value){
+                            if(value.toString().isEmpty){
+                              return 'Please enter meeting url';
+                            }
+                          },
                           context: context),
                       formField(
                           controller: topics,
                           title: 'Lecture topic',
+                          validator: (value){
+                            if(value.toString().isEmpty){
+                              return 'Please enter lecture topic';
+                            }
+                          },
                           context: context),
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.8,
@@ -121,31 +150,31 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
                             Expanded(
                               child: TextButton(
                                 style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
                                   backgroundColor:
                                       Theme.of(context).primaryColor,
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
+                                      borderRadius: BorderRadius.circular(8)),
                                 ),
                                 onPressed: () async {
-                                  setState(() {
-                                    _loading = true;
-                                  });
                                   if (_formKey.currentState!.validate()) {
+                                    setState(() =>_loading = true);
                                     log('form is validate====> ');
                                     subCollName = topics.text;
                                     await ClassDatabase.nextClass(
-                                      widget.classData['code'],
-                                      url.text,
-                                      topics.text,
-                                      _time.toString(),
-                                      selectedDate.toLocal(),
+                                     code: widget.classData['code'],
+                                     url: url.text,
+                                      topics: topics.text,
+                                      date: selectedDate,
+                                      time: _time
                                     );
                                     await NotificationService
                                         .sendPushNotification(
                                             title: url.text.toString(),
                                             body: topics.text.toString(),
-                                            fcmToken: [],
+                                            fcmToken: fcmTokens,
                                     );
+                                    setState(() =>_loading = false);
                                     setState(() {
                                       url.clear();
                                       topics.clear();
@@ -159,7 +188,11 @@ class _UpcomingClassesState extends State<UpcomingClasses> {
                                         color: Colors.redAccent);
                                   }
                                 },
-                                child: const Text(
+                                child: _loading?
+                                 Transform.scale(
+                                     scale: 0.5,
+                                     child: const CircularProgressIndicator.adaptive(backgroundColor: Colors.white)):
+                                const Text(
                                   'Schedule class',
                                   style: TextStyle(color: Colors.white),
                                 ),

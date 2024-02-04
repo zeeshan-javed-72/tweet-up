@@ -1,10 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 String image = "https://img.freepik.com/free-vector/laptop-with-program-code-isometric-icon-software-development-programming-applications-dark-neon_39422-971.jpg";
 class UpcomingClasses extends StatelessWidget {
-  const UpcomingClasses({Key? key}) : super(key: key);
-
-
+  final DocumentSnapshot snapshot;
+  final String meetingTime;
+  const UpcomingClasses({super.key, required this.snapshot, required this.meetingTime});
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -36,8 +37,8 @@ class UpcomingClasses extends StatelessWidget {
                         fit: BoxFit.fill)),
               ),
               SizedBox(height: height*0.01,),
-              const Text("Tuesday-9AM",
-                  style: TextStyle(
+               Text("$meetingTime",
+                  style: const TextStyle(
                     fontSize: 14,
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
