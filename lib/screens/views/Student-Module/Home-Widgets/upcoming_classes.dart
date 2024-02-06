@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 String image = "https://img.freepik.com/free-vector/laptop-with-program-code-isometric-icon-software-development-programming-applications-dark-neon_39422-971.jpg";
 class UpcomingClasses extends StatelessWidget {
   final DocumentSnapshot snapshot;
-  final String meetingTime;
-  const UpcomingClasses({super.key, required this.snapshot, required this.meetingTime});
+  final String meetingTime,subname,batch;
+  const UpcomingClasses({super.key, required this.snapshot, required this.meetingTime, required this.subname, required this.batch});
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -44,14 +44,14 @@ class UpcomingClasses extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   )),
               SizedBox(height: height*0.01,),
-              const Text("Flutter 3.7",
-                  style: TextStyle(
+               Text("$subname",
+                  style: const TextStyle(
                     fontSize: 18,
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                   )),
               SizedBox(height: height*0.01,),
-              const Text("Class 2a"),
+               Text("$batch"),
             ],
           ),
         ),

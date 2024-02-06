@@ -81,7 +81,8 @@ class ClassDatabase {
       await collName.doc(code).collection('assignments').doc(assignmentCode).update({
         'assignmentsUrl': FieldValue.arrayUnion([{
           "submittedAssignment": url,
-          "studentName": FirebaseAuth.instance.currentUser!.displayName,
+          "studentName": FirebaseAuth.instance.currentUser?.displayName,
+          'submittedAt': DateTime.now(),
         }]),
         "submittedByStudents": FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid]),
       });

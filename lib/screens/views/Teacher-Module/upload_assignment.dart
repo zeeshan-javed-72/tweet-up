@@ -126,7 +126,16 @@ class UploadAssignmentState extends State<UploadAssignment> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                       widget.page ==false? formField(controller: topic, title: 'Topic',context: context): Container(),
+                       widget.page ==false? formField(
+                           controller: topic,
+                           title: 'Topic',
+                           validator: (value){
+                             if(value.toString().isEmpty){
+                               return 'Please enter assignment title';
+                             }
+                           },
+                           context: context
+                       ): Container(),
                         SizedBox(height: height*0.01,),
                         ListTile(
                           visualDensity: const VisualDensity(horizontal: -4),
@@ -202,7 +211,7 @@ class UploadAssignmentState extends State<UploadAssignment> {
                                   style: TextStyle(color: Colors.white),
                                 ),
                                 onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
+                                  if (_formKey.currentState!.validate() && file != null) {
                                     setState(() {
                                       loading = true;
                                     });
@@ -229,9 +238,10 @@ class UploadAssignmentState extends State<UploadAssignment> {
                                       }else{
                                         Utils.snackBar(message: "Please select assignment",
                                             context: context, color: AppColors.errorColor);
-                                        print("Please select assignment");
                                       }
                                     }
+                                  }else{
+                                    Utils.snackBar(message: 'Something is missing', context: context, color: Colors.red);
                                   }
                                 },
                               ),

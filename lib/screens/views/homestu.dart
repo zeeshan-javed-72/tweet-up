@@ -28,18 +28,22 @@ class homestuState extends State<HomeStudent> {
   String emailID = '';
   String userProfile = '';
 
-  void saveFcmToken(){
-   FirebaseMessaging.instance.getToken().then((fcmToken){
-     FirebaseFirestore.instance.collection('users').doc(currentId).update({
-       'token': fcmToken.toString(),
-     });
-   });
+  void saveFcmToken() {
+    FirebaseMessaging.instance.getToken().then((fcmToken) {
+      FirebaseFirestore.instance.collection('users').doc(currentId).update({
+        'token': fcmToken.toString(),
+      });
+    });
   }
-  void fetchMyData() async{
-   await FirebaseFirestore.instance.collection('users').doc(currentId).get()
-       .then((value){
-      if(value.exists){
-        if(mounted){
+
+  void fetchMyData() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentId)
+        .get()
+        .then((value) {
+      if (value.exists) {
+        if (mounted) {
           setState(() {
             userName = value['name'];
             emailID = value['email'];
@@ -68,7 +72,8 @@ class homestuState extends State<HomeStudent> {
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
     var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height - AppBar().preferredSize.height;
+    var height =
+        MediaQuery.of(context).size.height - AppBar().preferredSize.height;
     return SafeArea(
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
@@ -114,63 +119,96 @@ class homestuState extends State<HomeStudent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                UserInfo(userName: userName,emailId: emailID,userProfile: userProfile),
-                // SizedBox(height: height * 0.03),
-                // Text(
-                //   "UpComing Classes",
-                //   style: GoogleFonts.poppins(
-                //     textStyle: const TextStyle(
-                //         fontSize: 16,
-                //         color: Colors.black87,
-                //         fontWeight: FontWeight.bold),
-                //   ),
-                // ),
-                // StreamBuilder<QuerySnapshot>(
-                //   stream: FirebaseFirestore.instance
-                //       .collection("classes")
-                //       .where("enrolledStudentsId", arrayContains: currentId)
-                //       .snapshots(),
-                //   builder: (BuildContext context,
-                //       AsyncSnapshot<QuerySnapshot> snapshot) {
-                //     if (snapshot.hasError) {
-                //       return const Text('Something went wrong');
-                //     }
-                //     if (!snapshot.hasData) {
-                //       return const Center(child: Text("Loading"));
-                //     }
-                //     if (snapshot.data!.size == 0) {
-                //       return SizedBox(
-                //           height: height * 0.07,
-                //           child:
-                //               const Center(child: Text("No Upcoming classes")));
-                //     }
-                //     return Container(
-                //       height: height * 0.36,
-                //       width: double.infinity,
-                //       decoration: BoxDecoration(
-                //           borderRadius: BorderRadius.circular(30)),
-                //       child: ListView(
-                //         scrollDirection: Axis.horizontal,
-                //         physics: const BouncingScrollPhysics(),
-                //         shrinkWrap: true,
-                //         children: snapshot.data!.docs
-                //             .map((DocumentSnapshot document) {
-                //           DateTime dateTime = DateTime.parse(document['date']);
-                //           String formattedDate = DateFormat('dd EEEE').format(dateTime);
-                //               return UpcomingClasses(
-                //                   snapshot: document,
-                //                   meetingTime: '$formattedDate-9AM',
-                //               );
-                //             })
-                //             .toList()
-                //             .cast(),
-                //       ),
-                //     );
-                //   },
-                // ),
-                SizedBox(
-                  height: height * 0.04
+                UserInfo(
+                    userName: userName,
+                    emailId: emailID,
+                    userProfile: userProfile),
+                SizedBox(height: height * 0.03),
+                Text(
+                  "UpComing Classes",
+                  style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection("classes")
+                      .where("enrolledStudentsId", arrayContains: currentId)
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return const Text('Something went wrong');
+                    }
+                    if (!snapshot.hasData) {
+                      return const Center(child: Text("Loading"));
+                    }
+                    if (snapshot.data!.size == 0) {
+                      return SizedBox(
+                          height: height * 0.07,
+                          child:
+                              const Center(child: Text("No Upcoming classes")));
+                    }
+                    return Container(
+                      height: height * 0.36,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30)),
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        shrinkWrap: true,
+                        children: snapshot.data!.docs
+                            .map((DocumentSnapshot document) {
+                              return StreamBuilder<QuerySnapshot>(
+                                  stream: document.reference
+                                      .collection('upComingClasses')
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasError) {
+                                      return const Text('Something went wrong');
+                                    }
+                                    if (!snapshot.hasData) {
+                                      return const Center(
+                                          child: Text("Loading"));
+                                    }
+                                    if (snapshot.data!.size == 0) {
+                                      return SizedBox(
+                                          height: height * 0.07,
+                                          child: const Center(
+                                              child:
+                                                  Text("No Upcoming classes")));
+                                    }
+                                    return ListView(
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      children: snapshot.data!.docs.map((e) {
+                                        DateTime dateTime =
+                                            DateTime.parse(e['date']);
+                                        String formattedDate =
+                                            DateFormat('dd EEEE')
+                                                .format(dateTime);
+                                        return UpcomingClasses(
+                                          snapshot: e,
+                                          meetingTime:
+                                              '$formattedDate-${e['time']}',
+                                          subname: document['subName'],
+                                          batch: document['batch'],
+                                        );
+                                      }).toList(),
+                                    );
+                                  });
+                            })
+                            .toList()
+                            .cast(),
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(height: height * 0.04),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -276,9 +314,12 @@ class homestuState extends State<HomeStudent> {
 
 class UserInfo extends StatelessWidget {
   const UserInfo({
-    super.key, required this.emailId, required this.userName, required this.userProfile,
+    super.key,
+    required this.emailId,
+    required this.userName,
+    required this.userProfile,
   });
-  final String emailId,userName,userProfile;
+  final String emailId, userName, userProfile;
 
   @override
   Widget build(BuildContext context) {
@@ -329,8 +370,12 @@ class UserInfo extends StatelessWidget {
                                 color: Colors.white,
                                 fontStyle: FontStyle.italic)),
                         IconButton(
-                            onPressed: () {
-                              FirebaseAuth.instance.signOut().then((value) {
+                            onPressed: () async{
+                             await FirebaseFirestore.instance.collection('users')
+                                  .doc(FirebaseAuth.instance.currentUser?.uid).update({
+                                'token': '',
+                              });
+                             await FirebaseAuth.instance.signOut().then((value) {
                                 Navigator.pushReplacementNamed(
                                     context, LoginScreen.id);
                               });
@@ -341,8 +386,9 @@ class UserInfo extends StatelessWidget {
                     // SizedBox(height: 2.h,),
                     Text("$emailId",
                         style: GoogleFonts.poppins(
-                          color: Colors.white,
-                            fontWeight: FontWeight.bold, fontSize: 12)),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12)),
                   ],
                 ),
               ),
