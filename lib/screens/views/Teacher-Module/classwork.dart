@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:tweet_up/Model-View_Classes/classes_view_model.dart';
 import 'package:tweet_up/constants/appColors.dart';
 import 'package:tweet_up/screens/views/Teacher-Module/upload_assignment.dart';
 import 'package:tweet_up/screens/views/Teacher-Module/upload_notes.dart';
@@ -35,6 +38,7 @@ class _ClassworkState extends State<Classwork>
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
+    final classViewModel = Provider.of<ClassesViewModel>(context);
     return Scaffold(
       floatingActionButton: SpeedDial(
         childMargin: const EdgeInsets.only(right: 18, bottom: 10),
@@ -302,7 +306,10 @@ class _ClassworkState extends State<Classwork>
                                           borderRadius: BorderRadius.circular(5),
                                         ),
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () async{
+                                       await classViewModel.downloadFile(data['submittedAssignment'],context);
+                                        log('message==> ${data['submittedAssignment']}');
+                                      },
                                       child: const Icon(Icons.download_sharp),
                                     ),
                                   ),
