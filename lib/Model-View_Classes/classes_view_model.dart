@@ -1,10 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tweet_up/util/utils.dart';
 
 class ClassesViewModel extends ChangeNotifier{
 
@@ -32,21 +32,21 @@ class ClassesViewModel extends ChangeNotifier{
     }
     }
 
-  Future<File?> downloadFileFromUrl(String storageReferenceUrl) async {
-    try {
-      final ref = FirebaseStorage.instance.refFromURL(storageReferenceUrl);
-      final String fileName = '${DateTime.now().millisecondsSinceEpoch}'; // You can change the file name if needed
-      final Directory appDocDir = await getApplicationDocumentsDirectory();
-      final File localFile = File('${appDocDir.path}/$fileName');
-      await ref.writeToFile(localFile);
-      File downloadedFile = File(localFile.path);
-      print('downloaded file from URL: $downloadedFile');
-      return localFile;
-    } catch (e) {
-      print('Error downloading file from URL: $e');
-      return null;
-    }
-  }
+  // Future<File?> downloadFileFromUrl(String storageReferenceUrl) async {
+  //   try {
+  //     final ref = FirebaseStorage.instance.refFromURL(storageReferenceUrl);
+  //     final String fileName = '${DateTime.now().millisecondsSinceEpoch}'; // You can change the file name if needed
+  //     final Directory appDocDir = await getApplicationDocumentsDirectory();
+  //     final File localFile = File('${appDocDir.path}/$fileName');
+  //     await ref.writeToFile(localFile);
+  //     File downloadedFile = File(localFile.path);
+  //     print('downloaded file from URL: $downloadedFile');
+  //     return localFile;
+  //   } catch (e) {
+  //     print('Error downloading file from URL: $e');
+  //     return null;
+  //   }
+  // }
   Future<dynamic> downloadFile(String fileUrl,BuildContext context) async{
    try{
      // final storageRef = FirebaseStorage.instance.ref();
@@ -99,13 +99,16 @@ class ClassesViewModel extends ChangeNotifier{
             double progress = snap.bytesTransferred / snap.totalBytes;
             var percentage = (progress * 100).roundToDouble();
             log('message==>$percentage');
+            if(percentage == 100.0){
+              Navigator.pop(context,'dasd');
+              Utils.showToast(message: 'File downloaded');
+            }
             return Center(
                 child: Transform.scale(
               scale: 2,
               child: CircularProgressIndicator(
                 value: percentage,
-                backgroundColor: Colors.grey,
-                valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor),
+                backgroundColor: Colors.white,
               ),
              ),
             );

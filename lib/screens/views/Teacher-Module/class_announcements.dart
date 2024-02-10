@@ -45,22 +45,51 @@ class AnnouncementsState extends State<Announcements> {
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? messagesSubscription;
   List<String> fcmTokens = [];
 
-  void getUserData(){
-    fcmTokens.clear();
-   FirebaseFirestore.instance
-        .collection('users')
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      for (var doc in querySnapshot.docs) {
-        if(doc.exists){
-          if(mounted){
-            setState(() => fcmTokens.add(doc['token']??''));
+  Future<void> fetchStudentDataForAllClasses() async {
+    try {
+      // Access Firestore collection for classes
+      CollectionReference classesCollection = FirebaseFirestore.instance.collection('classes');
+
+      // Retrieve documents from the classes collection
+      QuerySnapshot classesQuerySnapshot = await classesCollection.get();
+
+      // Iterate through each class document
+      classesQuerySnapshot.docs.forEach((DocumentSnapshot classDocument) async {
+        // Access enrolledStudents array within the class document
+        List<dynamic> enrolledStudents = classDocument['enrolledStudents'];
+
+        // Iterate through each enrolled student in the class
+        enrolledStudents.forEach((student) async {
+          // Extract studentId
+          String studentId = student['studentId'];
+
+          // Fetch additional data for the student using studentId
+          // Assuming you have another collection called 'users' where additional data is stored
+          DocumentSnapshot studentDataSnapshot = await FirebaseFirestore.instance.collection('users').doc(studentId).get();
+          if(studentDataSnapshot.exists) {
+            // Get the token
+            String token = studentDataSnapshot['token'] ?? '';
+
+            // Check if the token already exists in the list
+            if (!fcmTokens.contains(token)) {
+              // Add the token to the list
+              if (mounted) {
+                setState(() {
+                  fcmTokens.add(token);
+                });
+              }
+              print('Token added: $token');
+            } else {
+              print('Token already exists: $token');
+            }
           }
-          log('tokens ===> ${fcmTokens}');
-        }
-      }
-    });
+        });
+      });
+    } catch (error) {
+      print('Error fetching student data for all classes: $error');
+    }
   }
+
   void getMyData(){
     FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots()
         .listen((event) {
@@ -89,9 +118,10 @@ class AnnouncementsState extends State<Announcements> {
   @override
   void initState() {
     super.initState();
-    getUserData();
+    // getUserData();
     getMyData();
     readAllMessages();
+    fetchStudentDataForAllClasses();
   }
 
   @override

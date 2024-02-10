@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:provider/provider.dart';
+import 'package:tweet_up/Model-View_Classes/classes_view_model.dart';
 import 'package:tweet_up/screens/views/Teacher-Module/upload_assignment.dart';
 import 'assignments.dart';
 
@@ -25,8 +27,7 @@ class SubmitClassworkState extends State<SubmitClasswork> with SingleTickerProvi
   }
   @override
   Widget build(BuildContext context) {
-    // final h = MediaQuery.of(context).size.height/812;
-    // final w = MediaQuery.of(context).size.width/375;
+    final classNotifier = Provider.of<ClassesViewModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.classData?['subName']}'),
@@ -82,8 +83,9 @@ class SubmitClassworkState extends State<SubmitClasswork> with SingleTickerProvi
                              style: TextButton.styleFrom(
                                backgroundColor:  Colors.amber,
                              ),
-                             child: const Text('Open notes'),
+                             child: const Text('Download Notes'),
                              onPressed: () async {
+                             await classNotifier.downloadFile(document['url'],context);
                              },
                            ),
                          ],

@@ -127,16 +127,6 @@ class _CreateClassState extends State<CreateClass> {
                                         emailId: FirebaseAuth
                                             .instance.currentUser?.email,
                                       );
-                                      // await db.createClass(
-                                      //     subjectName.text,
-                                      //     batch.text,
-                                      //     professorName.text,
-                                      //     user.email,
-                                      //     err,
-                                      //     user.email! +
-                                      //         subjectName.text +
-                                      //         batch.text);
-
                                       setState(() {
                                         _loading = false;
                                         created = true;
@@ -162,7 +152,7 @@ class _CreateClassState extends State<CreateClass> {
                           ),
                           CopyCode(
                             created: created,
-                            code: code,
+                            code: randomString,
                           ),
                           Container(
                             padding: const EdgeInsets.all(20),
@@ -222,8 +212,7 @@ class CopyCode extends StatelessWidget {
                 ? () async {
                     ClipboardData data = ClipboardData(text: (code!));
                     await Clipboard.setData(data);
-                    Utils.flushBarErrorMessage(
-                        'code copied', context, AppColors.warningColor);
+                    Utils.flushBarErrorMessage('code copied', context, AppColors.warningColor);
                   }
                 : null,
             child: const Text('Copy'),

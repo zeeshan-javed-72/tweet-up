@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:tweet_up/generated/assets.dart';
 import 'package:tweet_up/screens/views/Student-Module/chat_view/widgets/chat_badge_widget.dart';
 import 'package:tweet_up/screens/views/Teacher-Module/class_announcements.dart';
@@ -16,7 +19,6 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-
 
   @override
   void initState() {
@@ -82,13 +84,13 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     ),
                   ),
-                  subtitle: const Text("Lets go for Flutter 3.8"),
+                  subtitle: Text("${document['lastMessage']}"),
                   trailing: Padding(
                     padding: const EdgeInsets.only(right: 10),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        const Text("22-03-2023"),
+                         Text(DateFormat('d EEEE h:mm a').format(document['lastMessageDate'].toDate())),
                         ChatBadgeWidget(chatRoomId: document.id,),
                       ],
                     ),

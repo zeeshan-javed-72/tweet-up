@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -147,13 +149,16 @@ class homestuState extends State<HomeStudent> {
                       return const Center(child: Text("Loading"));
                     }
                     if (snapshot.data!.size == 0) {
+                      log('lenght us => ${snapshot.data!.size}');
                       return SizedBox(
                           height: height * 0.07,
-                          child:
-                              const Center(child: Text("No Upcoming classes")));
+                          child: const Center(child: Text("No Upcoming classes",
+                            style: TextStyle(color: Colors.black),),
+                              ),
+                      );
                     }
                     return Container(
-                      height: height * 0.36,
+                      height: height * 0.26,
                       width: double.infinity,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30)),
@@ -176,11 +181,12 @@ class homestuState extends State<HomeStudent> {
                                           child: Text("Loading"));
                                     }
                                     if (snapshot.data!.size == 0) {
-                                      return SizedBox(
-                                          height: height * 0.07,
-                                          child: const Center(
-                                              child:
-                                                  Text("No Upcoming classes")));
+                                      log('lenght us => ${snapshot.data!.size}');
+                                      return const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Center(
+                                            child: Text("No Upcoming class")),
+                                      );
                                     }
                                     return ListView(
                                       scrollDirection: Axis.horizontal,

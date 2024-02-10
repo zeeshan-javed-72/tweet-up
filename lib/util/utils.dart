@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tweet_up/screens/authenticate/login.dart';
 
 class Utils{
@@ -15,6 +16,18 @@ class Utils{
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
      ),
+    );
+  }
+
+  static showToast({required String message,bool? error}){
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0
     );
   }
 

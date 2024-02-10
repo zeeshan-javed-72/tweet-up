@@ -23,6 +23,8 @@ class ClassDatabase {
       "emailId": emailId,
       "enrolledStudents": [],
       "enrolledStudentsId": [],
+      "lastMessage": '',
+      "lastMessageDate": '',
     });
 
   }catch(e){
@@ -39,7 +41,8 @@ class ClassDatabase {
       'time': DateTime.now(),
       'status': 'unread',
     });
-  }
+    await collName.doc(code).update({'lastMessage': post,'lastMessageDate': DateTime.now()});
+ }
 
   static Future nextClass({code, url, topics, date, time}) async {
     DateTime selectedTime = DateTime(2022, 1, 1, time.hour, time.minute);
