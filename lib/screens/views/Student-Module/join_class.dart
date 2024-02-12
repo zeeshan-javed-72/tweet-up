@@ -65,6 +65,8 @@ class _JoinClassState extends State<JoinClass> {
   String message = '';
   String userName = '';
   String userImage = '';
+  String phone = '';
+  String emailID = '';
   bool _loading = false;
 
   void getMyData(){
@@ -72,6 +74,8 @@ class _JoinClassState extends State<JoinClass> {
         .listen((event) {
       userName = event['name'];
       userImage = event['userImage'];
+      emailID = event['email'];
+      phone = event['phone'];
     });
   }
 
@@ -149,6 +153,8 @@ class _JoinClassState extends State<JoinClass> {
                                       context,
                                       studentName: userName,
                                       userImg: userImage,
+                                      email: emailID,
+                                      phone: phone
                                             )
                                       .then((value) {
                                     setState(() {

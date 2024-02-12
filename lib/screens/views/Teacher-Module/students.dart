@@ -300,15 +300,13 @@ class _ListOfStudentsState extends State<ListOfStudents> {
                       GestureDetector(
                         onTap: () async {
                           final mailtoLink = Mailto(
-                              // to: [email],
-                              // cc: ['cc1@example.com', 'cc2@example.com'],
-                              // subject: 'mailto example subject',
-                              // body: 'mailto example body',
+                              to: ['${snapshot.data?['enrolledStudents'][index]['email']}'],
+                              cc: ['cc1@example.com', 'cc2@example.com'],
+                            subject: '${snapshot.data?['enrolledStudents'][index]['stdName']}',
+                            body: "What's in your mind?",
                               );
-                          // Convert the Mailto instance into a string.
-                          // Use either Dart's string interpolation
-                          // or the toString() method.
-                          await launch('mail:$mailtoLink');
+                          await launch('$mailtoLink');
+                          // await canLaunchUrl(Uri.parse('mail:$mailtoLink'));
                         },
                         child: Icon(
                           Icons.email,

@@ -93,7 +93,8 @@ class ClassDatabase {
     }
   }
 
-  static Future joinClass(var rollNumber, String code, context,{String? studentName,userImg}) async{
+  static Future joinClass(var rollNumber, String code,
+      context,{String? studentName,userImg,email,phone}) async{
 
       var allClasses = FirebaseFirestore.instance.collection('classes');
       final classDoc = await allClasses.doc(code).get();
@@ -115,6 +116,8 @@ class ClassDatabase {
         'rollNo': rollNumber,
         'stdName': studentName,
         'stdImg': userImg,
+        'email': email,
+        'phone': phone
       });
       await enrolledStudentsId.add(FirebaseAuth.instance.currentUser?.uid);
       await allClasses.doc(code).update({'enrolledStudents': enrolledStudents});

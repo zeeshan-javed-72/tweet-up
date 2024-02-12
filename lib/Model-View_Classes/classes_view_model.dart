@@ -32,21 +32,6 @@ class ClassesViewModel extends ChangeNotifier{
     }
     }
 
-  // Future<File?> downloadFileFromUrl(String storageReferenceUrl) async {
-  //   try {
-  //     final ref = FirebaseStorage.instance.refFromURL(storageReferenceUrl);
-  //     final String fileName = '${DateTime.now().millisecondsSinceEpoch}'; // You can change the file name if needed
-  //     final Directory appDocDir = await getApplicationDocumentsDirectory();
-  //     final File localFile = File('${appDocDir.path}/$fileName');
-  //     await ref.writeToFile(localFile);
-  //     File downloadedFile = File(localFile.path);
-  //     print('downloaded file from URL: $downloadedFile');
-  //     return localFile;
-  //   } catch (e) {
-  //     print('Error downloading file from URL: $e');
-  //     return null;
-  //   }
-  // }
   Future<dynamic> downloadFile(String fileUrl,BuildContext context,{required String? topicName}) async{
    try{
      // final storageRef = FirebaseStorage.instance.ref();

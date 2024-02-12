@@ -85,16 +85,16 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   subtitle: Text("${document['lastMessage']}"),
-                  trailing: Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                         Text(DateFormat('d EEEE h:mm a').format(document['lastMessageDate'].toDate())),
-                        ChatBadgeWidget(chatRoomId: document.id,),
-                      ],
-                    ),
-                  ),
+                  // trailing: Padding(
+                  //   padding: const EdgeInsets.only(right: 10),
+                  //   child: Column(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //     children: [
+                  //        Text('${DateFormat('dEEEE h:mm a').format(document['lastMessageDate'].toDate())}'),
+                  //        ChatBadgeWidget(chatRoomId: document.id),
+                  //     ],
+                  //   ),
+                  // ),
                 ),
               );
             }).toList(),
