@@ -6,6 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:tweet_up/Model-View_Classes/classes_view_model.dart';
 import 'package:tweet_up/constants/appColors.dart';
 import 'package:tweet_up/util/utils.dart';
 import '../../../services/firebase_api.dart';
@@ -48,6 +50,7 @@ class _AssignmentsState extends State<Assignments> {
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height / 812;
     final w = MediaQuery.of(context).size.width / 375;
+    final classNotifier = Provider.of<ClassesViewModel>(context);
     return Padding(
       padding: EdgeInsets.only(top: 10 * h),
       child: ListTile(
@@ -128,9 +131,10 @@ class _AssignmentsState extends State<Assignments> {
                       ),
                     ),
                     onPressed: () async {
-                      UploadFilesFirebase.downloadFile2(
+                     await classNotifier.downloadFile(
                         widget.snapshot?['assignmentFile'],
                         context,
+                        topicName: widget.snapshot?['assignmentTopic']
                       );
                     },
                     child: const Icon(Icons.download_for_offline,

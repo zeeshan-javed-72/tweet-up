@@ -307,7 +307,11 @@ class _ClassworkState extends State<Classwork>
                                         ),
                                       ),
                                       onPressed: () async{
-                                       await classViewModel.downloadFile(data['submittedAssignment'],context);
+                                       await classViewModel.downloadFile(
+                                           data['submittedAssignment'],
+                                           context,
+                                           topicName: data['studentName']
+                                       );
                                         log('message==> ${data['submittedAssignment']}');
                                       },
                                       child: const Icon(Icons.download_sharp),

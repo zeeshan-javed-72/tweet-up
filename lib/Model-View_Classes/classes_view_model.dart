@@ -47,13 +47,20 @@ class ClassesViewModel extends ChangeNotifier{
   //     return null;
   //   }
   // }
-  Future<dynamic> downloadFile(String fileUrl,BuildContext context) async{
+  Future<dynamic> downloadFile(String fileUrl,BuildContext context,{required String? topicName}) async{
    try{
      // final storageRef = FirebaseStorage.instance.ref();
      final httpsReference = FirebaseStorage.instance.refFromURL(fileUrl);
-     final String fileName = '${DateTime.now().millisecondsSinceEpoch}'; // You can change the file name if needed
-     final Directory appDocDir = await getApplicationDocumentsDirectory();
-     final File localFile = File('${appDocDir.path}/$fileName');
+     // final parts = fileUrl.split('/');
+     // final filename = parts.last;
+     const downloadsDirectoryPath = '/storage/emulated/0/Download';
+     final downloadsDirectory = Directory(downloadsDirectoryPath);
+     if (!(await downloadsDirectory.exists())) {
+       await downloadsDirectory.create(recursive: true);
+     }
+     final filePath = '${downloadsDirectory.path}/$topicName.pdf';
+     final File localFile = File(filePath);
+     // log('path is ==> ${localFile}');
      final downloadTask = httpsReference.writeToFile(localFile);
      File downloadedFile = File(localFile.path);
      _showDownloadCompleteDialog(
@@ -87,6 +94,9 @@ class ClassesViewModel extends ChangeNotifier{
      log('Error in try cathc==> ${e}');
    }
   }
+
+
+
 // Optional dialog functions to handle success, error, and general error cases
   void _showDownloadCompleteDialog(BuildContext context,DownloadTask downloadTask) {
     showDialog(

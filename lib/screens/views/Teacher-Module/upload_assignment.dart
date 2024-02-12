@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path/path.dart' as path;
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -108,6 +109,23 @@ class UploadAssignmentState extends State<UploadAssignment> {
       }
     },
   );
+
+  String userName = '';
+  getUserData() async{
+    FirebaseFirestore.instance.collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get().then((value){
+       setState(() {
+         userName = value['name'];
+       });
+    });
+  }
+
+  @override
+  void initState() {
+    getUserData();
+    super.initState();
+  }
 
 
   @override
@@ -223,6 +241,7 @@ class UploadAssignmentState extends State<UploadAssignment> {
                                          url: value.toString(),
                                          dueDate: selectedDate,
                                          page: widget.page,
+                                         userName: userName
                                       );
                                     });
                                     }else if(widget.page == true){
@@ -233,6 +252,7 @@ class UploadAssignmentState extends State<UploadAssignment> {
                                             page: widget.page,
                                             code: widget.classCode,
                                             assignmentCode: widget.snapshot!.id,
+                                            userName: userName
                                           );
                                         });
                                       }else{

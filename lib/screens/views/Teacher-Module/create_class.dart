@@ -49,13 +49,11 @@ class _CreateClassState extends State<CreateClass> {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
     String? coll = user.email;
-    final CollectionReference myClassCollection =
-        FirebaseFirestore.instance.collection(coll!);
+    final CollectionReference myClassCollection = FirebaseFirestore.instance.collection(coll!);
     final db = ClassDatabase(user.uid, myClassCollection);
     return _loading
         ? Loader()
         : Scaffold(
-            // drawer: CustomDrawer(),
             appBar: AppBar(
               iconTheme: const IconThemeData(color: Colors.white),
               backgroundColor: Theme.of(context).primaryColor,
@@ -80,19 +78,19 @@ class _CreateClassState extends State<CreateClass> {
                             context: context,
                           ),
                           const SizedBox(
-                            height: 10,
+                            height: 10
                           ),
                           formField(
                               controller: professorName,
                               title: 'Name of professor',
                               context: context),
                           const SizedBox(
-                            height: 10,
+                            height: 10
                           ),
                           formField(
                             controller: batch,
                             title: 'Semester/class',
-                            context: context,
+                            context: context
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 20),
@@ -120,12 +118,10 @@ class _CreateClassState extends State<CreateClass> {
                                       await ClassDatabase.createClassByTeacher(
                                         professorName: professorName.text,
                                         subjectName: subjectName.text,
-                                        teacherId: FirebaseAuth
-                                            .instance.currentUser?.uid,
+                                        teacherId: FirebaseAuth.instance.currentUser?.uid,
                                         batch: batch.text,
                                         code: randomString,
-                                        emailId: FirebaseAuth
-                                            .instance.currentUser?.email,
+                                        emailId: FirebaseAuth.instance.currentUser?.email,
                                       );
                                       setState(() {
                                         _loading = false;
@@ -190,7 +186,7 @@ class _CreateClassState extends State<CreateClass> {
 }
 
 class CopyCode extends StatelessWidget {
-  CopyCode({
+  CopyCode({super.key,
     required this.created,
     required this.code,
   });

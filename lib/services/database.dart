@@ -69,7 +69,8 @@ class ClassDatabase {
     });
   }
 
-  static Future postAssignment({String? code, topicName, url, dueDate, page,assignmentCode}) async {
+  static Future postAssignment({String? code, topicName, url,
+    dueDate, page,assignmentCode,userName}) async {
     var timeStamp = Timestamp.fromMillisecondsSinceEpoch(10000000000);
     var collName = FirebaseFirestore.instance.collection("classes");
     if(page == false) {
@@ -84,7 +85,7 @@ class ClassDatabase {
       await collName.doc(code).collection('assignments').doc(assignmentCode).update({
         'assignmentsUrl': FieldValue.arrayUnion([{
           "submittedAssignment": url,
-          "studentName": FirebaseAuth.instance.currentUser?.displayName,
+          "studentName": userName,
           'submittedAt': DateTime.now(),
         }]),
         "submittedByStudents": FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid]),

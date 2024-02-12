@@ -85,7 +85,10 @@ class SubmitClassworkState extends State<SubmitClasswork> with SingleTickerProvi
                              ),
                              child: const Text('Download Notes'),
                              onPressed: () async {
-                             await classNotifier.downloadFile(document['url'],context);
+                             await classNotifier.downloadFile(
+                                 document['url'],
+                                 context,
+                                 topicName: document['topic']);
                              },
                            ),
                          ],

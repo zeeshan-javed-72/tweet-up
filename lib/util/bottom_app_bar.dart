@@ -18,7 +18,7 @@ class _BottomBarState extends State<BottomBar> {
   Widget build(BuildContext context) {
     final tabs = [
       const HomeStudent(),
-       const UpcomingClassesStudent(),
+       // const UpcomingClassesStudent(),
       const ChatScreen(),
 
     ];
@@ -45,11 +45,11 @@ class _BottomBarState extends State<BottomBar> {
               label: 'asseveration',
               selectedIcon: Icon(CupertinoIcons.house_fill,color: Theme.of(context).primaryColor),
             ),
-            NavigationDestination(
-              icon: Icon(CupertinoIcons.calendar,color: Theme.of(context).primaryColor),
-              selectedIcon: Icon(CupertinoIcons.calendar_today, color: Theme.of(context).primaryColor),
-              label: 'Classwork',
-            ),
+            // NavigationDestination(
+            //   icon: Icon(CupertinoIcons.calendar,color: Theme.of(context).primaryColor),
+            //   selectedIcon: Icon(CupertinoIcons.calendar_today, color: Theme.of(context).primaryColor),
+            //   label: 'Classwork',
+            // ),
             NavigationDestination(
               icon: Icon(CupertinoIcons.chat_bubble_text, color: Theme.of(context).primaryColor),
               selectedIcon: Icon(CupertinoIcons.chat_bubble_text_fill, color: Theme.of(context).primaryColor),

@@ -158,7 +158,7 @@ class homestuState extends State<HomeStudent> {
                       );
                     }
                     return Container(
-                      height: height * 0.26,
+                      height: height * 0.36,
                       width: double.infinity,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30)),
