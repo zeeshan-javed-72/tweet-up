@@ -282,7 +282,7 @@ class _ListOfStudentsState extends State<ListOfStudents> {
                     borderRadius: BorderRadius.circular(8)
                   ),
                   title: Text(
-                    snapshot.data?['enrolledStudents'][index]['stdName']??'Noname',
+                    snapshot.data?['enrolledStudents'][index]['stdName']??'Name',
                     maxLines: 1,
                     style: TextStyle(
                         color: Colors.black,

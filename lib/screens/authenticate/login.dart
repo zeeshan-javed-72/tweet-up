@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tweet_up/generated/assets.dart';
 import 'package:tweet_up/screens/authenticate/sign_up.dart';
-import 'package:tweet_up/util/bottom_app_bar.dart';
 import '../../constants/custom_textfield.dart';
 import '../../services/auth.dart';
 
@@ -35,11 +34,11 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 children: [
                   SizedBox(
-                    height: 10 * h,
+                    height: 10 * h
                   ),
                   Image.asset(
                     Assets.assetsImagesAppIcon,
-                    width: 120 * w,
+                    width: 120 * w
                   ),
                   SizedBox(height: 60 * h),
                   Consumer<AuthViewModel>(
@@ -112,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   SizedBox(
-                    height: 40 * h,
+                    height: 40 * h
                   ),
                   Row(
                     children: [
@@ -146,60 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   SizedBox(
-                    height: 40 * h,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                          child: Divider(
-                        color: Theme.of(context).primaryColor,
-                        thickness: 2,
-                      )),
-                      SizedBox(
-                        width: 30 * w,
-                      ),
-                      const Text('or'),
-                      SizedBox(
-                        width: 30 * w,
-                      ),
-                      Expanded(
-                          child: Divider(
-                        color: Theme.of(context).primaryColor,
-                        thickness: 2,
-                      )),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 40 * h,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xffE5E5E5),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                  side: BorderSide(
-                                      color: Theme.of(context).primaryColor))),
-                          onPressed: () {
-                            _auth.signInWithGoogle(context).then((value) {
-                              Navigator.pushReplacement(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) => const BottomBar()));
-                            });
-                          },
-                          child: Image.asset(
-                            Assets.imagesGoogleLogo,
-                            height: 30,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 50 * h,
+                    height: 50 * h
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,

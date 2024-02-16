@@ -27,9 +27,7 @@ class ClassesViewModel extends ChangeNotifier{
       if(image != null){
         setImg(File(image.path));
       }
-    }catch(e){
-
-    }
+     }catch(e){}
     }
 
   Future<dynamic> downloadFile(String fileUrl,BuildContext context,{required String? topicName}) async{

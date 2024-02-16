@@ -20,6 +20,7 @@ class Assets {
   static const String imagesMobile = 'assets/images/mobile.png';
   static const String imagesNoproduct = 'assets/images/noproduct.gif';
   static const String imagesPhone = 'assets/images/phone.png';
+  static const String imagesSplashLogo = 'assets/images/splash_logo.png';
   static const String imagesTop1 = 'assets/images/top1.png';
   static const String imagesTop2 = 'assets/images/top2.png';
   static const String screenshotsScreenshot20230319121308 = 'assets/images/screenshots/Screenshot_20230319-121308.jpg';
