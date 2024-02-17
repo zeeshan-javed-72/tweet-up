@@ -2,10 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tweet_up/screens/views/homestu.dart';
 import '../screens/views/Student-Module/chat_screen.dart';
-import '../screens/views/Student-Module/upcoming_classes_student.dart';
 
 class BottomBar extends StatefulWidget {
-   const BottomBar({Key? key}) : super(key: key);
+  const BottomBar({Key? key}) : super(key: key);
 
   @override
   State<BottomBar> createState() => _BottomBarState();
@@ -18,9 +17,8 @@ class _BottomBarState extends State<BottomBar> {
   Widget build(BuildContext context) {
     final tabs = [
       const HomeStudent(),
-       // const UpcomingClassesStudent(),
+      // const UpcomingClassesStudent(),
       const ChatScreen(),
-
     ];
     return Scaffold(
       body: tabs[_currentIndex],
@@ -34,16 +32,18 @@ class _BottomBarState extends State<BottomBar> {
           surfaceTintColor: Colors.white,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
           selectedIndex: _currentIndex,
-          onDestinationSelected: (index)=>{
-            setState((){
+          onDestinationSelected: (index) => {
+            setState(() {
               _currentIndex = index;
             })
           },
-          destinations:  [
+          destinations: [
             NavigationDestination(
-              icon: Icon(CupertinoIcons.home, color: Theme.of(context).primaryColor),
+              icon: Icon(CupertinoIcons.home,
+                  color: Theme.of(context).primaryColor),
               label: 'asseveration',
-              selectedIcon: Icon(CupertinoIcons.house_fill,color: Theme.of(context).primaryColor),
+              selectedIcon: Icon(CupertinoIcons.house_fill,
+                  color: Theme.of(context).primaryColor),
             ),
             // NavigationDestination(
             //   icon: Icon(CupertinoIcons.calendar,color: Theme.of(context).primaryColor),
@@ -51,8 +51,10 @@ class _BottomBarState extends State<BottomBar> {
             //   label: 'Classwork',
             // ),
             NavigationDestination(
-              icon: Icon(CupertinoIcons.chat_bubble_text, color: Theme.of(context).primaryColor),
-              selectedIcon: Icon(CupertinoIcons.chat_bubble_text_fill, color: Theme.of(context).primaryColor),
+              icon: Icon(CupertinoIcons.chat_bubble_text,
+                  color: Theme.of(context).primaryColor),
+              selectedIcon: Icon(CupertinoIcons.chat_bubble_text_fill,
+                  color: Theme.of(context).primaryColor),
               label: 'Up Coming',
             ),
           ],

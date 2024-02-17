@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,7 +12,7 @@ import 'dart:math' as math;
 
 List<Color> colorList = [
   const Color.fromRGBO(255, 173, 173, 1),
-  const Color.fromRGBO(64, 166, 166,  1),
+  const Color.fromRGBO(64, 166, 166, 1),
   const Color.fromRGBO(200, 231, 255, 1),
   const Color.fromRGBO(242, 232, 207, 1),
   const Color.fromRGBO(155, 246, 255, 1),
@@ -24,7 +23,7 @@ List<Color> colorList = [
 
 class Announcements extends StatefulWidget {
   final Map<dynamic, dynamic>? classData;
-  const Announcements({super.key,this.classData});
+  const Announcements({super.key, this.classData});
   static const routeName = '/announcements';
 
   @override
@@ -32,7 +31,6 @@ class Announcements extends StatefulWidget {
 }
 
 class AnnouncementsState extends State<Announcements> {
-
   final announcement = TextEditingController();
   final _scrollController = ScrollController();
   User? user = FirebaseAuth.instance.currentUser;
@@ -48,7 +46,8 @@ class AnnouncementsState extends State<Announcements> {
   Future<void> fetchStudentDataForAllClasses() async {
     try {
       // Access Firestore collection for classes
-      CollectionReference classesCollection = FirebaseFirestore.instance.collection('classes');
+      CollectionReference classesCollection =
+          FirebaseFirestore.instance.collection('classes');
 
       // Retrieve documents from the classes collection
       QuerySnapshot classesQuerySnapshot = await classesCollection.get();
@@ -65,8 +64,12 @@ class AnnouncementsState extends State<Announcements> {
 
           // Fetch additional data for the student using studentId
           // Assuming you have another collection called 'users' where additional data is stored
-          DocumentSnapshot studentDataSnapshot = await FirebaseFirestore.instance.collection('users').doc(studentId).get();
-          if(studentDataSnapshot.exists) {
+          DocumentSnapshot studentDataSnapshot = await FirebaseFirestore
+              .instance
+              .collection('users')
+              .doc(studentId)
+              .get();
+          if (studentDataSnapshot.exists) {
             // Get the token
             String token = studentDataSnapshot['token'] ?? '';
 
@@ -90,21 +93,27 @@ class AnnouncementsState extends State<Announcements> {
     }
   }
 
-  void getMyData(){
-    FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots()
+  void getMyData() {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.uid)
+        .snapshots()
         .listen((event) {
-        userName = event['name'];
-        userImg = event['userImage'];
+      userName = event['name'];
+      userImg = event['userImage'];
     });
   }
-  void readAllMessages(){
+
+  void readAllMessages() {
     messagesSubscription = FirebaseFirestore.instance
         .collection('classes')
         .doc(widget.classData?['code'])
         .collection('groupChat')
         .where(
-        'status', isEqualTo: 'unread',
-    ).where('postedBy', isNotEqualTo: user?.uid)
+          'status',
+          isEqualTo: 'unread',
+        )
+        .where('postedBy', isNotEqualTo: user?.uid)
         .snapshots()
         .listen((querySnapshot) {
       final batch = FirebaseFirestore.instance.batch();
@@ -138,16 +147,20 @@ class AnnouncementsState extends State<Announcements> {
         centerTitle: true,
         shadowColor: Colors.white,
         surfaceTintColor: Colors.white,
-        title: Text(widget.classData!['subName'].toString(),
+        title: Text(
+          widget.classData!['subName'].toString(),
           style: TextStyle(color: Theme.of(context).colorScheme.secondary),
         ),
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
+        iconTheme:
+            IconThemeData(color: Theme.of(context).colorScheme.secondary),
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          ListOfAnnouncements(classData: widget.classData!, scrollController: _scrollController),
+          ListOfAnnouncements(
+              classData: widget.classData!,
+              scrollController: _scrollController),
           Align(
             alignment: Alignment.bottomCenter,
             child: Row(
@@ -159,13 +172,13 @@ class AnnouncementsState extends State<Announcements> {
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     textInputAction: TextInputAction.newline,
-                    onChanged: (String? index){
-                      if(index!.isNotEmpty){
+                    onChanged: (String? index) {
+                      if (index!.isNotEmpty) {
                         setState(() {
                           color = Theme.of(context).primaryColor;
                           isTure = false;
                         });
-                      }else if(index.isEmpty){
+                      } else if (index.isEmpty) {
                         setState(() {
                           color = Colors.grey.shade300;
                           isTure = true;
@@ -174,7 +187,8 @@ class AnnouncementsState extends State<Announcements> {
                     },
                     cursorColor: Theme.of(context).primaryColor,
                     decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.only(left: 8, top: 0, bottom: 0, right: 0),
+                      contentPadding: const EdgeInsets.only(
+                          left: 8, top: 0, bottom: 0, right: 0),
                       border: OutlineInputBorder(
                         borderSide: const BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(20),
@@ -188,8 +202,8 @@ class AnnouncementsState extends State<Announcements> {
                 Expanded(
                   flex: 1,
                   child: IconButton(
-                    onPressed: () async{
-                      if (announcement.text.isNotEmpty){
+                    onPressed: () async {
+                      if (announcement.text.isNotEmpty) {
                         _scrollController.animateTo(
                             _scrollController.position.minScrollExtent,
                             duration: const Duration(milliseconds: 300),
@@ -209,9 +223,13 @@ class AnnouncementsState extends State<Announcements> {
                         announcement.clear();
                       }
                     },
-                    icon: Icon(Icons.send_outlined,
-                      size: 28, color: announcement.text.isEmpty ? Colors.grey :
-                      Theme.of(context).primaryColor,),
+                    icon: Icon(
+                      Icons.send_outlined,
+                      size: 28,
+                      color: announcement.text.isEmpty
+                          ? Colors.grey
+                          : Theme.of(context).primaryColor,
+                    ),
                   ),
                 ),
               ],
@@ -224,7 +242,8 @@ class AnnouncementsState extends State<Announcements> {
 }
 
 class ListOfAnnouncements extends StatelessWidget {
-    ListOfAnnouncements({super.key, required this.classData, required this.scrollController}) ;
+  ListOfAnnouncements(
+      {super.key, required this.classData, required this.scrollController});
 
   final Map classData;
   final ScrollController scrollController;
@@ -247,49 +266,56 @@ class ListOfAnnouncements extends StatelessWidget {
             if (!snapshot.hasData) {
               return const Center(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator.adaptive(backgroundColor: Colors.grey),
-                  Text("Loading"),
+                  CircularProgressIndicator.adaptive(
+                      backgroundColor: Colors.grey),
+                  Center(child: Text("Loading")),
                 ],
               ));
             }
-            return  ListView(
+            return ListView(
               controller: scrollController,
               reverse: true,
-              children: snapshot.data!.docs.map((announcementData){
+              children: snapshot.data!.docs.map((announcementData) {
                 return Padding(
-                  padding:  const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   child: Column(
-                    crossAxisAlignment: announcementData['postedBy']
-                        == FirebaseAuth.instance.currentUser?.uid ?
-                    CrossAxisAlignment.start : CrossAxisAlignment.end,
+                    crossAxisAlignment: announcementData['postedBy'] ==
+                            FirebaseAuth.instance.currentUser?.uid
+                        ? CrossAxisAlignment.start
+                        : CrossAxisAlignment.end,
                     children: [
-                      Text('${announcementData['senderName']}',
+                      Text(
+                        '${announcementData['senderName']}',
                         style: TextStyle(
                             color: announcementData['postedBy'] ==
-                                FirebaseAuth.instance.currentUser?.uid ?
-                            Colors.black  : Colors.black,
+                                    FirebaseAuth.instance.currentUser?.uid
+                                ? Colors.black
+                                : Colors.black,
                             fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 2),
                       ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width -95,
+                          maxWidth: MediaQuery.of(context).size.width - 95,
                         ),
                         child: Container(
-                          padding: const EdgeInsets.only(left: 15, right: 15, top: 12, bottom: 12),
+                          padding: const EdgeInsets.only(
+                              left: 15, right: 15, top: 12, bottom: 12),
                           decoration: BoxDecoration(
-                              color: announcementData['postedBy'] == FirebaseAuth.instance.currentUser?.uid ?
-                              Theme.of(context).primaryColor : const Color(0xffEDF0F2),
+                              color: announcementData['postedBy'] ==
+                                      FirebaseAuth.instance.currentUser?.uid
+                                  ? Theme.of(context).primaryColor
+                                  : const Color(0xffEDF0F2),
                               borderRadius: const BorderRadius.only(
                                 topRight: Radius.circular(8),
                                 topLeft: Radius.zero,
                                 bottomLeft: Radius.circular(8),
                                 bottomRight: Radius.circular(8),
-                              )
-                          ),
+                              )),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -297,25 +323,28 @@ class ListOfAnnouncements extends StatelessWidget {
                                 announcementData['post'],
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
-                                    color: announcementData['postedBy']
-                                        == FirebaseAuth.instance.currentUser?.uid ?
-                                    Colors.white : Colors.black,
-                                    fontWeight: FontWeight.bold
-                                ),
+                                    color: announcementData['postedBy'] ==
+                                            FirebaseAuth
+                                                .instance.currentUser?.uid
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      Text(DateFormat("MMM d hh:mm a").format(announcementData['time'].toDate()),
+                      Text(
+                        DateFormat("MMM d hh:mm a")
+                            .format(announcementData['time'].toDate()),
                         textAlign: TextAlign.start,
                         style: TextStyle(
-                            color: announcementData['postedBy']
-                                == FirebaseAuth.instance.currentUser?.uid ?
-                            Colors.grey : Colors.blueGrey,
+                            color: announcementData['postedBy'] ==
+                                    FirebaseAuth.instance.currentUser?.uid
+                                ? Colors.grey
+                                : Colors.blueGrey,
                             fontWeight: FontWeight.bold,
-                            fontSize: 10
-                        ),
+                            fontSize: 10),
                       ),
                       // SentMessage(message: "message", send: announcementData['postedBy']),
                     ],
@@ -353,7 +382,7 @@ class Triangle extends CustomPainter {
 class SentMessage extends StatelessWidget {
   final String message;
   final String send;
-   SentMessage({
+  SentMessage({
     Key? key,
     required this.send,
     required this.message,
@@ -365,47 +394,53 @@ class SentMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     final messageTextGroup = Flexible(
         child: Row(
-          mainAxisAlignment: send == user?.uid ? MainAxisAlignment.start : MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            send == user?.uid ? Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.rotationY(math.pi),
-              child: CustomPaint(
-                painter: Triangle(Colors.grey.shade300),
-              ),
-            ): Container(),
-            Flexible(
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: send == user?.uid ? Theme.of(context).primaryColor : Colors.grey[900],
-                  borderRadius: send == user?.uid ?
-                  const BorderRadius.only(
-                    topLeft: Radius.circular(18),
-                    bottomLeft: Radius.circular(18),
-                    bottomRight: Radius.circular(18),
-                  ) :
-                  const BorderRadius.only(
-                    topRight: Radius.circular(18),
-                    bottomLeft: Radius.circular(18),
-                    bottomRight: Radius.circular(18),
-                  ),
+      mainAxisAlignment:
+          send == user?.uid ? MainAxisAlignment.start : MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        send == user?.uid
+            ? Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.rotationY(math.pi),
+                child: CustomPaint(
+                  painter: Triangle(Colors.grey.shade300),
                 ),
-                child: Text(
-                  message,
-                  style: const TextStyle(color: Colors.white,
-                      fontFamily: 'Monstserrat', fontSize: 14),
-                ),
-              ),
+              )
+            : Container(),
+        Flexible(
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: send == user?.uid
+                  ? Theme.of(context).primaryColor
+                  : Colors.grey[900],
+              borderRadius: send == user?.uid
+                  ? const BorderRadius.only(
+                      topLeft: Radius.circular(18),
+                      bottomLeft: Radius.circular(18),
+                      bottomRight: Radius.circular(18),
+                    )
+                  : const BorderRadius.only(
+                      topRight: Radius.circular(18),
+                      bottomLeft: Radius.circular(18),
+                      bottomRight: Radius.circular(18),
+                    ),
             ),
-            CustomPaint(painter: Triangle(Colors.grey.shade900)),
-          ],
-        ));
+            child: Text(
+              message,
+              style: const TextStyle(
+                  color: Colors.white, fontFamily: 'Monstserrat', fontSize: 14),
+            ),
+          ),
+        ),
+        CustomPaint(painter: Triangle(Colors.grey.shade900)),
+      ],
+    ));
 
     return Padding(
-      padding: send != user?.uid ? const EdgeInsets.only(right: 18.0, left: 50, top: 5, bottom: 5)
-            : const EdgeInsets.only(right: 50.0, left: 18, top: 5, bottom: 5),
+      padding: send != user?.uid
+          ? const EdgeInsets.only(right: 18.0, left: 50, top: 5, bottom: 5)
+          : const EdgeInsets.only(right: 50.0, left: 18, top: 5, bottom: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
@@ -416,4 +451,3 @@ class SentMessage extends StatelessWidget {
     );
   }
 }
-

@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tweet_up/screens/views/Teacher-Module/subject_class.dart';
-import 'package:tweet_up/screens/views/Student-Module/subject_class_student.dart';
 import 'package:tweet_up/services/firestore_service.dart';
 import 'package:tweet_up/util/utils.dart';
 import '../../../constants/constants.dart';

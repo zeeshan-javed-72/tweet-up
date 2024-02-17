@@ -133,11 +133,11 @@ class _ClassworkState extends State<Classwork>
                           }
 
                           if (!snapshot.hasData) {
-                            return const Text("Loading");
+                            return Center(child: const Text("Loading"));
                           }
                           if (snapshot.data!.docs.isEmpty) {
-                            return Center(
-                                child: const Text("No notes added yet"));
+                            return const Center(
+                                child: Text("No notes added yet"));
                           }
 
                           print('No notes added yet');
@@ -163,8 +163,9 @@ class _ClassworkState extends State<Classwork>
                                       horizontal: 6, vertical: 5),
                                   leading: CircleAvatar(
                                     radius: 25,
-                                    child: Text(
-                                        "${document['topic'].substring(0, 1)}"),
+                                    child: Text(document['topic'] != ''
+                                        ? "${document['topic'].substring(0, 1)}"
+                                        : 'null'),
                                   ),
                                   title: Text(
                                     document['topic'],
@@ -190,7 +191,7 @@ class _ClassworkState extends State<Classwork>
                             return const Text('Something went wrong');
                           }
                           if (!snapshot.hasData) {
-                            return const Text("Loading");
+                            return Center(child: const Text("Loading"));
                           }
                           if (snapshot.data!.docs.isEmpty) {
                             return Center(
@@ -253,7 +254,8 @@ class _ClassworkState extends State<Classwork>
                             .doc(widget.classData['code'])
                             .collection('assignments')
                             .snapshots(),
-                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
                           if (snapshot.hasError) {
                             return const Text('Something went wrong');
                           }
@@ -265,63 +267,82 @@ class _ClassworkState extends State<Classwork>
                                 child: Text("No assignments added yet"));
                           }
                           return ListView(
-                            children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                            children: snapshot.data!.docs
+                                .map((DocumentSnapshot document) {
                               return ListView.builder(
                                   shrinkWrap: true,
                                   itemCount: document['assignmentsUrl'].length,
-                                  itemBuilder: (context,index){
-                                    final data = document['assignmentsUrl'][index];
-                                return document['assignmentsUrl'].isNotEmpty ?
-                                 Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 6, right: 6, bottom: 10, top: 10),
-                                  child: ListTile(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    tileColor: Colors.white,
-                                    title: Text(
-                                      "${document['assignmentTopic']}",
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    subtitle: Text(
-                                      "Submitted At: ${DateFormat('MMM-dd hh:mm a').format(data['submittedAt'].toDate())}",
-                                      style: GoogleFonts.poppins(
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black87,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                    trailing: FilledButton.tonal(
-                                      style: FilledButton.styleFrom(
-                                        backgroundColor:
-                                        document['assignmentDueDate'].toDate().isAfter(DateTime.now())
-                                            ? AppColors.successColor
-                                            : AppColors.errorColor,
-                                        visualDensity: const VisualDensity(
-                                            vertical: -1, horizontal: 3),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(5),
-                                        ),
-                                      ),
-                                      onPressed: () async{
-                                       await classViewModel.downloadFile(
-                                           data['submittedAssignment'],
-                                           context,
-                                           topicName: data['studentName']
-                                       );
-                                        log('message==> ${data['submittedAssignment']}');
-                                      },
-                                      child: const Icon(Icons.download_sharp),
-                                    ),
-                                  ),
-                                ) :
-                                const Center(
-                                    child: Text("No assignments added yet",
-                                      style: TextStyle(color: Colors.black),));
-                              });
+                                  itemBuilder: (context, index) {
+                                    final data =
+                                        document['assignmentsUrl'][index];
+                                    return document['assignmentsUrl'].isNotEmpty
+                                        ? Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 6,
+                                                right: 6,
+                                                bottom: 10,
+                                                top: 10),
+                                            child: ListTile(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                              tileColor: Colors.white,
+                                              title: Text(
+                                                "${document['assignmentTopic']}",
+                                                style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              subtitle: Text(
+                                                "Submitted At: ${DateFormat('MMM-dd hh:mm a').format(data['submittedAt'].toDate())}",
+                                                style: GoogleFonts.poppins(
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.black87,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                              trailing: FilledButton.tonal(
+                                                style: FilledButton.styleFrom(
+                                                  backgroundColor: document[
+                                                              'assignmentDueDate']
+                                                          .toDate()
+                                                          .isAfter(
+                                                              DateTime.now())
+                                                      ? AppColors.successColor
+                                                      : AppColors.errorColor,
+                                                  visualDensity:
+                                                      const VisualDensity(
+                                                          vertical: -1,
+                                                          horizontal: 3),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                  ),
+                                                ),
+                                                onPressed: () async {
+                                                  await classViewModel.downloadFile(
+                                                      data[
+                                                          'submittedAssignment'],
+                                                      context,
+                                                      topicName:
+                                                          data['studentName']);
+                                                  log('message==> ${data['submittedAssignment']}');
+                                                },
+                                                child: const Icon(
+                                                    Icons.download_sharp),
+                                              ),
+                                            ),
+                                          )
+                                        : const Center(
+                                            child: Text(
+                                            "No assignments added yet",
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ));
+                                  });
                             }).toList(),
                           );
                         }),

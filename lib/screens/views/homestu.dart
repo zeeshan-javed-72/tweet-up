@@ -151,10 +151,13 @@ class homestuState extends State<HomeStudent> {
                     if (snapshot.data!.size == 0) {
                       log('lenght us => ${snapshot.data!.size}');
                       return SizedBox(
-                          height: height * 0.07,
-                          child: const Center(child: Text("No Upcoming classes",
-                            style: TextStyle(color: Colors.black),),
-                              ),
+                        height: height * 0.07,
+                        child: const Center(
+                          child: Text(
+                            "No Upcoming classes",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
                       );
                     }
                     return Container(
@@ -182,11 +185,8 @@ class homestuState extends State<HomeStudent> {
                                     }
                                     if (snapshot.data!.size == 0) {
                                       log('lenght us => ${snapshot.data!.size}');
-                                      return const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Center(
-                                            child: Text("No Upcoming class")),
-                                      );
+                                      return const Center(
+                                          child: Text("No Upcoming class"));
                                     }
                                     return ListView(
                                       scrollDirection: Axis.horizontal,
@@ -376,12 +376,16 @@ class UserInfo extends StatelessWidget {
                                 color: Colors.white,
                                 fontStyle: FontStyle.italic)),
                         IconButton(
-                            onPressed: () async{
-                             await FirebaseFirestore.instance.collection('users')
-                                  .doc(FirebaseAuth.instance.currentUser?.uid).update({
+                            onPressed: () async {
+                              await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(FirebaseAuth.instance.currentUser?.uid)
+                                  .update({
                                 'token': '',
                               });
-                             await FirebaseAuth.instance.signOut().then((value) {
+                              await FirebaseAuth.instance
+                                  .signOut()
+                                  .then((value) {
                                 Navigator.pushReplacementNamed(
                                     context, LoginScreen.id);
                               });

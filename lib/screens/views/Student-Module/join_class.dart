@@ -1,20 +1,15 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tweet_up/util/form_validator.dart';
 import 'package:tweet_up/util/utils.dart';
-import '../../../models/error.dart';
 import '../../../services/database.dart';
-import '../../../services/loading.dart';
 import '../../../widgets/formFields.dart';
 
 class JoinClass extends StatefulWidget {
@@ -69,8 +64,11 @@ class _JoinClassState extends State<JoinClass> {
   String emailID = '';
   bool _loading = false;
 
-  void getMyData(){
-    FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots()
+  void getMyData() {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.uid)
+        .snapshots()
         .listen((event) {
       userName = event['name'];
       userImage = event['userImage'];
@@ -148,14 +146,11 @@ class _JoinClassState extends State<JoinClass> {
                                     _loading = true;
                                   });
                                   await ClassDatabase.joinClass(
-                                          rollNum.text,
-                                      code.text,
-                                      context,
-                                      studentName: userName,
-                                      userImg: userImage,
-                                      email: emailID,
-                                      phone: phone
-                                            )
+                                          rollNum.text, code.text, context,
+                                          studentName: userName,
+                                          userImg: userImage,
+                                          email: emailID,
+                                          phone: phone)
                                       .then((value) {
                                     setState(() {
                                       _loading = false;

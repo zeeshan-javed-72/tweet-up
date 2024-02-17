@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:tweet_up/screens/authenticate/login.dart';
 import '../../constants/constants.dart';
 import '../../services/auth.dart';
 import 'Teacher-Module/enrolled_classes.dart';
@@ -24,23 +23,24 @@ class _homestudState extends State<homestud> {
     String? imgURL;
     if (user == null) {
       imgURL =
-      'https://cdn3.iconfinder.com/data/icons/user-interface-web-1/550/web-circle-circular-round_54-512.png';
+          'https://cdn3.iconfinder.com/data/icons/user-interface-web-1/550/web-circle-circular-round_54-512.png';
     } else {
-      imgURL = user.photoURL ?? 'https://cdn3.iconfinder.com/data/icons/user-interface-web-1/550/web-circle-circular-round_54-512.png';
+      imgURL = user.photoURL ??
+          'https://cdn3.iconfinder.com/data/icons/user-interface-web-1/550/web-circle-circular-round_54-512.png';
     }
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         actions: [
           IconButton(
-            onPressed: () async {
-            },
+            onPressed: () async {},
             icon: const Icon(Icons.logout),
           )
         ],
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.white,
-        title: Text('Classroom',
+        title: Text(
+          'Classroom',
           style: TextStyle(color: Theme.of(context).colorScheme.secondary),
         ),
       ),
@@ -50,7 +50,7 @@ class _homestudState extends State<homestud> {
             UserInfo(imgURL: imgURL, user: user),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 28, vertical: 20.0),
+                  const EdgeInsets.symmetric(horizontal: 28, vertical: 20.0),
               child: Text(
                 'Manage your classes like never before',
                 textAlign: TextAlign.center,
@@ -64,7 +64,7 @@ class _homestudState extends State<homestud> {
             ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 28, vertical: 20.0),
+                  const EdgeInsets.symmetric(horizontal: 28, vertical: 20.0),
               child: Text(
                 'Either be a student or a teacher',
                 textAlign: TextAlign.center,
@@ -82,7 +82,7 @@ class _homestudState extends State<homestud> {
             ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 28, vertical: 20.0),
+                  const EdgeInsets.symmetric(horizontal: 28, vertical: 20.0),
               child: Text(
                 'Student\'s section',
                 style: kPageTitleStyleBlack,
@@ -100,7 +100,7 @@ class _homestudState extends State<homestud> {
                   },
                   child: Container(
                     height: 180,
-                    width: MediaQuery.of(context).size.width/2.3,
+                    width: MediaQuery.of(context).size.width / 2.3,
                     padding: const EdgeInsets.all(30),
                     decoration: const BoxDecoration(
                         boxShadow: [
@@ -131,7 +131,7 @@ class _homestudState extends State<homestud> {
                   child: Container(
                     padding: const EdgeInsets.all(30),
                     height: 180,
-                    width: MediaQuery.of(context).size.width/2.3,
+                    width: MediaQuery.of(context).size.width / 2.3,
                     decoration: const BoxDecoration(
                         boxShadow: [
                           BoxShadow(
@@ -191,17 +191,17 @@ class UserInfo extends StatelessWidget {
           children: [
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 28.0, vertical: 10),
+                  const EdgeInsets.symmetric(horizontal: 28.0, vertical: 10),
               child: Container(
-                  width: 50.0,
-                  height: 50.0,
-                  decoration:  BoxDecoration(
-                      shape: BoxShape.circle,
-                      image:  DecorationImage(
-                          fit: BoxFit.cover,
-                        image:  NetworkImage(imgURL),
-                      ),
+                width: 50.0,
+                height: 50.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(imgURL),
                   ),
+                ),
               ),
             ),
             Padding(
@@ -212,10 +212,11 @@ class UserInfo extends StatelessWidget {
                   /*Text(user.displayName,
                       style:
                       GoogleFonts.questrial(fontWeight: FontWeight.bold)),*/
-                  Text(//user.email,
+                  Text(
+                      //user.email,
                       'Classroom Application Flipr Hackathon X',
                       style:
-                      GoogleFonts.questrial(fontWeight: FontWeight.w100)),
+                          GoogleFonts.questrial(fontWeight: FontWeight.w100)),
                 ],
               ),
             )

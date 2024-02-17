@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,14 +12,14 @@ import 'dart:async';
 import '../constants/appColors.dart';
 import '../util/bottom_app_bar.dart';
 
-class AuthViewModel extends ChangeNotifier{
+class AuthViewModel extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   BuildContext? context;
   Stream<User?> get user {
     return _auth.authStateChanges();
   }
 
-  Future signOut() async{
+  Future signOut() async {
     try {
       return await _auth.signOut();
     } catch (e) {
@@ -50,7 +49,7 @@ class AuthViewModel extends ChangeNotifier{
   String? _passwordError;
   String? get passwordError => _passwordError;
 
-  void passwordErrorTex(error){
+  void passwordErrorTex(error) {
     _passwordError = error;
     notifyListeners();
   }
@@ -58,30 +57,35 @@ class AuthViewModel extends ChangeNotifier{
   String? _emailError;
   String? get emailError => _emailError;
 
-  void emailErrorText(error){
+  void emailErrorText(error) {
     _emailError = error;
     notifyListeners();
   }
+
   UserCredential? result;
-  Future<UserCredential?> signIn(String email, String password, BuildContext context) async {
+  Future<UserCredential?> signIn(
+      String email, String password, BuildContext context) async {
     try {
       setLoginLoading(true);
-       result = await _auth.signInWithEmailAndPassword(email: email, password: password).then((value){
-         setLoginLoading(false);
-         if (value.user!.emailVerified) {
-           Navigator.popUntil(context, (route) => route.isFirst);
-           Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=> const BottomBar()));
-         } else {
-           logout(context);
-           _emailError = "Please verify your email first";
-           notifyListeners();
-         }
-       });
-       return result;
+      result = await _auth
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((value) {
+        setLoginLoading(false);
+        if (value.user!.emailVerified) {
+          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.pushReplacement(context,
+              CupertinoPageRoute(builder: (context) => const BottomBar()));
+        } else {
+          logout(context);
+          _emailError = "Please verify your email first";
+          notifyListeners();
+        }
+      });
+      return result;
     } on FirebaseAuthException catch (e) {
       setLoginLoading(false);
       // Utils.topFlushBarMessage(e.code, context, AppColors.errorColor);
-      switch(e.code){
+      switch (e.code) {
         case "invalid-email":
           _emailError = "Please enter a valid email";
           notifyListeners();
@@ -99,16 +103,17 @@ class AuthViewModel extends ChangeNotifier{
           notifyListeners();
           break;
         case "network-request-failed":
-          Utils.flushBarErrorMessage("Please check your internet connection and try again",
-              context, AppColors.errorColor);
+          Utils.flushBarErrorMessage(
+              "Please check your internet connection and try again",
+              context,
+              AppColors.errorColor);
           notifyListeners();
           break;
         default:
           _emailError = 'An error occurred, please try again later';
           notifyListeners();
       }
-
-    }catch(e){
+    } catch (e) {
       Utils.flushBarErrorMessage(e.toString(), context, AppColors.errorColor);
       notifyListeners();
     }
@@ -125,20 +130,21 @@ class AuthViewModel extends ChangeNotifier{
   String? _resetEmailError;
   String? get resetEmailError => _resetEmailError;
 
-  void resetEmailErrorText(error){
+  void resetEmailErrorText(error) {
     _resetEmailError = error;
     notifyListeners();
   }
 
-  Future<void> resetPassword(String email,BuildContext context ) async {
+  Future<void> resetPassword(String email, BuildContext context) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
       notifyListeners();
-      Utils.flushBarErrorMessage('Check your email for resetting your password', context, AppColors.warningColor);
+      Utils.flushBarErrorMessage('Check your email for resetting your password',
+          context, AppColors.warningColor);
       notifyListeners();
-    }on FirebaseAuthException catch(e){
+    } on FirebaseAuthException catch (e) {
       setResetLoading(false);
-      switch(e.code){
+      switch (e.code) {
         case "invalid-email":
           _resetEmailError = "Please enter a valid email address";
           notifyListeners();
@@ -152,7 +158,10 @@ class AuthViewModel extends ChangeNotifier{
           notifyListeners();
           break;
         case "network-request-failed":
-          Utils.flushBarErrorMessage("Please check your internet connection and try again", context, AppColors.errorColor);
+          Utils.flushBarErrorMessage(
+              "Please check your internet connection and try again",
+              context,
+              AppColors.errorColor);
           notifyListeners();
           break;
         default:
@@ -163,16 +172,16 @@ class AuthViewModel extends ChangeNotifier{
     }
   }
 
-
-  Future<String> uploadUserImage(File userImg) async{
-    try{
+  Future<String> uploadUserImage(File userImg) async {
+    try {
       var timeStamp = Timestamp.now().millisecondsSinceEpoch;
       FirebaseStorage storage = FirebaseStorage.instance;
       await storage.ref("profiles/$timeStamp").putFile(userImg);
-      String? downloadUrl = await storage.ref("profiles/$timeStamp").getDownloadURL();
+      String? downloadUrl =
+          await storage.ref("profiles/$timeStamp").getDownloadURL();
       notifyListeners();
       return downloadUrl.toString();
-    } on FirebaseAuthException catch(e){
+    } on FirebaseAuthException catch (e) {
       debugPrint('Error: ${e.code}');
     }
     return '';
@@ -181,7 +190,7 @@ class AuthViewModel extends ChangeNotifier{
   String? _registerPasswordError;
   String? get registerPasswordError => _registerPasswordError;
 
-  void registerPasswordText(error){
+  void registerPasswordText(error) {
     _registerPasswordError = error;
     notifyListeners();
   }
@@ -189,26 +198,23 @@ class AuthViewModel extends ChangeNotifier{
   String? _registerEmailError;
   String? get registerEmailError => _registerEmailError;
 
-  void registerEmailText(error){
+  void registerEmailText(error) {
     _registerEmailError = error;
     notifyListeners();
   }
 
- UserCredential? userCredential;
-  Future<UserCredential?> signUp(
-      String email,
-      String password,
-      String name,
-      var phone,
-      File userImage,
-      BuildContext context) async {
+  UserCredential? userCredential;
+  Future<UserCredential?> signUp(String email, String password, String name,
+      var phone, File userImage, BuildContext context) async {
     try {
       setRegisterLoading(true);
       userCredential = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-        await uploadUserImage(userImage).then((img) async {
-        await FirebaseFirestore.instance.collection("users")
-            .doc(FirebaseAuth.instance.currentUser!.uid).set({
+      await uploadUserImage(userImage).then((img) async {
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .set({
           "name": name,
           "email": email,
           "password": password,
@@ -220,12 +226,15 @@ class AuthViewModel extends ChangeNotifier{
       await user?.sendEmailVerification();
       setRegisterLoading(false);
       logout(context);
-      Utils.flushBarErrorMessage("visit gmail to verify your email account on $email", context, AppColors.warningColor);
+      Utils.flushBarErrorMessage(
+          "visit gmail to verify your email account on $email",
+          context,
+          AppColors.warningColor);
       notifyListeners();
       return userCredential;
-    } on FirebaseAuthException catch(e){
+    } on FirebaseAuthException catch (e) {
       setRegisterLoading(false);
-      switch(e.code){
+      switch (e.code) {
         case "invalid-email":
           _registerEmailError = "Please enter a valid email address";
           notifyListeners();
@@ -251,8 +260,10 @@ class AuthViewModel extends ChangeNotifier{
           notifyListeners();
           break;
         case "network-request-failed":
-          Utils.flushBarErrorMessage("Please check your internet connection and try again",
-              context, AppColors.errorColor);
+          Utils.flushBarErrorMessage(
+              "Please check your internet connection and try again",
+              context,
+              AppColors.errorColor);
           notifyListeners();
           break;
         default:
@@ -291,13 +302,13 @@ class AuthViewModel extends ChangeNotifier{
   }
 
   bool obscurePassword = false;
-  setRegisterObscure(){
+  setRegisterObscure() {
     obscurePassword = !obscurePassword;
     notifyListeners();
   }
 
   bool obscurePasswordLogin = false;
-  setLoginObscure(){
+  setLoginObscure() {
     obscurePasswordLogin = !obscurePasswordLogin;
     notifyListeners();
   }
@@ -306,6 +317,6 @@ class AuthViewModel extends ChangeNotifier{
     FirebaseAuth.instance.signOut();
     notifyListeners();
   }
-
 }
+
 final GoogleSignIn googleSignIn = GoogleSignIn();
