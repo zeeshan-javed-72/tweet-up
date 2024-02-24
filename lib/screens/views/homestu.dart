@@ -146,22 +146,25 @@ class homestuState extends State<HomeStudent> {
                       return const Text('Something went wrong');
                     }
                     if (!snapshot.hasData) {
-                      return const Center(child: Text("Loading"));
+                      return const Padding(
+                        padding: EdgeInsets.all(18.0),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
                     }
                     if (snapshot.data!.size == 0) {
-                      log('lenght us => ${snapshot.data!.size}');
+                      // log('lenght us => ${snapshot.data!.size}');
                       return SizedBox(
                         height: height * 0.07,
                         child: const Center(
                           child: Text(
-                            "No Upcoming classes",
+                            "No Upcoming classs",
                             style: TextStyle(color: Colors.black),
                           ),
                         ),
                       );
                     }
                     return Container(
-                      height: height * 0.36,
+                      height: height * 0.35,
                       width: double.infinity,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30)),
@@ -185,10 +188,10 @@ class homestuState extends State<HomeStudent> {
                                     }
                                     if (snapshot.data!.size == 0) {
                                       log('lenght us => ${snapshot.data!.size}');
-                                      return const Center(
-                                          child: Text("No Upcoming class"));
+                                      return const SizedBox.shrink();
                                     }
                                     return ListView(
+                                      padding: const EdgeInsets.all(8),
                                       scrollDirection: Axis.horizontal,
                                       shrinkWrap: true,
                                       children: snapshot.data!.docs.map((e) {
@@ -214,7 +217,7 @@ class homestuState extends State<HomeStudent> {
                     );
                   },
                 ),
-                SizedBox(height: height * 0.04),
+                SizedBox(height: height * 0.02),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,

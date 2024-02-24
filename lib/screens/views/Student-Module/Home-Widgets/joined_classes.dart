@@ -55,16 +55,20 @@ class JoinedClasses extends StatelessWidget {
           ),
         ),
       ),
-      trailing: const Icon(Icons.arrow_forward_ios,
-          size: 24, color: Colors.black87),
+      trailing:
+          const Icon(Icons.arrow_forward_ios, size: 24, color: Colors.black87),
       title: Text(
         "${document['subName']}",
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: const TextStyle(
             color: Colors.black87, fontSize: 17, fontWeight: FontWeight.bold),
       ),
-      subtitle: const Text(
-        'Class 3',
-        style: TextStyle(
+      subtitle: Text(
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        '${document['profName']}',
+        style: const TextStyle(
             color: Colors.black54, fontSize: 16, fontWeight: FontWeight.bold),
       ),
     );
