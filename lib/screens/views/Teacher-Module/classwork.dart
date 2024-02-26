@@ -288,13 +288,25 @@ class _ClassworkState extends State<Classwork>
                                                     BorderRadius.circular(6),
                                               ),
                                               tileColor: Colors.white,
-                                              title: Text(
-                                                "${document['assignmentTopic']}",
-                                                style: const TextStyle(
-                                                    color: Colors.black,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
+                                              title: RichText(
+                                                  text: TextSpan(children: [
+                                                TextSpan(
+                                                  text: document[
+                                                      'assignmentTopic'],
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                TextSpan(
+                                                  text:
+                                                      '\n${data['studentName']}',
+                                                  style: const TextStyle(
+                                                      color: Colors.black45,
+                                                      fontWeight:
+                                                          FontWeight.normal),
+                                                )
+                                              ])),
                                               subtitle: Text(
                                                 "Submitted At: ${DateFormat('MMM-dd hh:mm a').format(data['submittedAt'].toDate())}",
                                                 style: GoogleFonts.poppins(

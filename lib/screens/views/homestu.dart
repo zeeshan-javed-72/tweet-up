@@ -9,12 +9,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tweet_up/screens/views/Teacher-Module/create_class.dart';
+import 'package:tweet_up/widgets/custom_shimmer.dart';
 import '../authenticate/login.dart';
 import 'Student-Module/Home-Widgets/joined_classes.dart';
 import 'Student-Module/Home-Widgets/my_classes.dart';
 import 'Student-Module/Home-Widgets/upcoming_classes.dart';
 import 'Teacher-Module/enrolled_classes.dart';
 import 'Student-Module/join_class.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeStudent extends StatefulWidget {
   static const routeName = '/homestu';
@@ -146,10 +148,7 @@ class homestuState extends State<HomeStudent> {
                       return const Text('Something went wrong');
                     }
                     if (!snapshot.hasData) {
-                      return const Padding(
-                        padding: EdgeInsets.all(18.0),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
+                      return const CustomShimmer();
                     }
                     if (snapshot.data!.size == 0) {
                       // log('lenght us => ${snapshot.data!.size}');
@@ -183,8 +182,7 @@ class homestuState extends State<HomeStudent> {
                                       return const Text('Something went wrong');
                                     }
                                     if (!snapshot.hasData) {
-                                      return const Center(
-                                          child: Text("Loading"));
+                                      return const CustomShimmer();
                                     }
                                     if (snapshot.data!.size == 0) {
                                       log('lenght us => ${snapshot.data!.size}');
