@@ -155,7 +155,7 @@ class _homestudState extends State<homestud> {
                 )
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
           ],
@@ -222,7 +222,7 @@ class UserInfo extends StatelessWidget {
             )
           ],
         ),
-        Padding(
+        const Padding(
           padding: EdgeInsets.symmetric(horizontal: 28),
           child: Divider(),
         ),

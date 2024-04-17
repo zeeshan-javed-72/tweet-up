@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,11 +15,10 @@ import 'Student-Module/Home-Widgets/my_classes.dart';
 import 'Student-Module/Home-Widgets/upcoming_classes.dart';
 import 'Teacher-Module/enrolled_classes.dart';
 import 'Student-Module/join_class.dart';
-import 'package:shimmer/shimmer.dart';
 
 class HomeStudent extends StatefulWidget {
   static const routeName = '/homestu';
-  const HomeStudent({Key? key}) : super(key: key);
+  const HomeStudent({super.key});
 
   @override
   homestuState createState() => homestuState();
@@ -75,9 +73,7 @@ class homestuState extends State<HomeStudent> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
-    var width = MediaQuery.of(context).size.width;
-    var height =
-        MediaQuery.of(context).size.height - AppBar().preferredSize.height;
+    var height = MediaQuery.of(context).size.height - AppBar().preferredSize.height;
     return SafeArea(
       child: Scaffold(
         floatingActionButton: FloatingActionButton(

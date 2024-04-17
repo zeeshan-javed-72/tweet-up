@@ -15,7 +15,6 @@ class UpcomingClasses extends StatelessWidget {
       required this.batch});
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tweet_up/screens/views/homestu.dart';
 import '../screens/views/Student-Module/chat_screen.dart';
+import '../screens/views/upcoming_classes_widget.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({Key? key}) : super(key: key);
@@ -17,7 +18,7 @@ class _BottomBarState extends State<BottomBar> {
   Widget build(BuildContext context) {
     final tabs = [
       const HomeStudent(),
-      // const UpcomingClassesStudent(),
+      const UpcomingClassesWidget(),
       const ChatScreen(),
     ];
     return Scaffold(
@@ -45,11 +46,11 @@ class _BottomBarState extends State<BottomBar> {
               selectedIcon: Icon(CupertinoIcons.house_fill,
                   color: Theme.of(context).primaryColor),
             ),
-            // NavigationDestination(
-            //   icon: Icon(CupertinoIcons.calendar,color: Theme.of(context).primaryColor),
-            //   selectedIcon: Icon(CupertinoIcons.calendar_today, color: Theme.of(context).primaryColor),
-            //   label: 'Classwork',
-            // ),
+            NavigationDestination(
+              icon: Icon(CupertinoIcons.calendar,color: Theme.of(context).primaryColor),
+              selectedIcon: Icon(CupertinoIcons.calendar_today, color: Theme.of(context).primaryColor),
+              label: 'Classwork',
+            ),
             NavigationDestination(
               icon: Icon(CupertinoIcons.chat_bubble_text,
                   color: Theme.of(context).primaryColor),
