@@ -11,8 +11,8 @@ class CustomShimmer extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
+        baseColor: Colors.grey.shade400,
+        highlightColor: Colors.grey.shade100,
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 8),
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),

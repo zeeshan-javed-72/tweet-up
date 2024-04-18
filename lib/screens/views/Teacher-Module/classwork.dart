@@ -133,7 +133,7 @@ class _ClassworkState extends State<Classwork>
                           }
 
                           if (!snapshot.hasData) {
-                            return Center(child: const Text("Loading"));
+                            return const Center(child: Text("Loading"));
                           }
                           if (snapshot.data!.docs.isEmpty) {
                             return const Center(
@@ -191,11 +191,11 @@ class _ClassworkState extends State<Classwork>
                             return const Text('Something went wrong');
                           }
                           if (!snapshot.hasData) {
-                            return Center(child: const Text("Loading"));
+                            return const Center(child: Text("Loading"));
                           }
                           if (snapshot.data!.docs.isEmpty) {
-                            return Center(
-                                child: const Text("No assignments added yet"));
+                            return const Center(
+                                child: Text("No assignments added yet"));
                           }
                           return ListView(
                             children: snapshot.data!.docs

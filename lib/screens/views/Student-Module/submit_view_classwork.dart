@@ -37,11 +37,8 @@ class SubmitClassworkState extends State<SubmitClasswork>
   @override
   Widget build(BuildContext context) {
     final classNotifier = Provider.of<ClassesViewModel>(context);
-    var width = MediaQuery.of(context).size.width;
     var height =
         MediaQuery.of(context).size.height - AppBar().preferredSize.height;
-    final h = MediaQuery.of(context).size.height / 812;
-    final w = MediaQuery.of(context).size.width / 375;
     return Scaffold(
         appBar: AppBar(
           title: Text('${widget.classData?['subName']}'),
@@ -57,7 +54,7 @@ class SubmitClassworkState extends State<SubmitClasswork>
                 text: "Assignments",
               ),
               Tab(
-                text: "Upcomming",
+                text: "Upcoming",
               ),
             ],
           ),

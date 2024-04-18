@@ -6,109 +6,82 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tweet_up/util/utils.dart';
 
-class ClassesViewModel extends ChangeNotifier{
-
-  Future<void> teacherClasses() async{
-
-  }
+class ClassesViewModel extends ChangeNotifier {
+  Future<void> teacherClasses() async {}
 
   File? _img;
   File? get img => _img;
 
-  void setImg(File file){
+  void setImg(File file) {
     _img = file;
     notifyListeners();
   }
 
   Future<void> pickImage() async {
-    try{
+    try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-      if(image != null){
+      if (image != null) {
         setImg(File(image.path));
       }
-     }catch(e){}
-    }
-
-  Future<dynamic> downloadFile(String fileUrl,BuildContext context,{required String? topicName}) async{
-   try{
-     // final storageRef = FirebaseStorage.instance.ref();
-     final httpsReference = FirebaseStorage.instance.refFromURL(fileUrl);
-     // final parts = fileUrl.split('/');
-     // final filename = parts.last;
-     const downloadsDirectoryPath = '/storage/emulated/0/Download';
-     final downloadsDirectory = Directory(downloadsDirectoryPath);
-     if (!(await downloadsDirectory.exists())) {
-       await downloadsDirectory.create(recursive: true);
-     }
-     final filePath = '${downloadsDirectory.path}/$topicName.pdf';
-     final File localFile = File(filePath);
-     // log('path is ==> ${localFile}');
-     final downloadTask = httpsReference.writeToFile(localFile);
-     File downloadedFile = File(localFile.path);
-     _showDownloadCompleteDialog(
-       context,
-       downloadTask,
-     );
-     // downloadTask.snapshotEvents.listen((taskSnapshot) {
-     //   log('State of downloading is===> ${taskSnapshot.state.toString()}');
-     //   switch (taskSnapshot.state) {
-     //     case TaskState.running:
-     //      return _showDownloadCompleteDialog(
-     //        context,
-     //        downloadTask,
-     //      );
-     //     case TaskState.paused:
-     //     // TODO: Handle this case.
-     //       break;
-     //     case TaskState.success:
-     //      return Navigator.pop(context);
-     //     // TODO: Handle this case.
-     //       break;
-     //     case TaskState.canceled:
-     //     // TODO: Handle this case.
-     //       break;
-     //     case TaskState.error:
-     //     // TODO: Handle this case.
-     //       break;
-     //   }
-     // });
-   }catch(e){
-     log('Error in try cathc==> ${e}');
-   }
+    } catch (e) {}
   }
 
-
+  Future<dynamic> downloadFile(String fileUrl, BuildContext context,
+      {required String? topicName}) async {
+    try {
+      // final storageRef = FirebaseStorage.instance.ref();
+      final httpsReference = FirebaseStorage.instance.refFromURL(fileUrl);
+      // final parts = fileUrl.split('/');
+      // final filename = parts.last;
+      const downloadsDirectoryPath = '/storage/emulated/0/Download';
+      final downloadsDirectory = Directory(downloadsDirectoryPath);
+      if (!(await downloadsDirectory.exists())) {
+        await downloadsDirectory.create(recursive: true);
+      }
+      final filePath = '${downloadsDirectory.path}/$topicName.pdf';
+      final File localFile = File(filePath);
+      // log('path is ==> ${localFile}');
+      final downloadTask = httpsReference.writeToFile(localFile);
+      // File downloadedFile = File(localFile.path);
+      _showDownloadCompleteDialog(
+        context,
+        downloadTask,
+      );
+    } catch (e) {
+      log('Error in try cathc==> ${e}');
+    }
+  }
 
 // Optional dialog functions to handle success, error, and general error cases
-  void _showDownloadCompleteDialog(BuildContext context,DownloadTask downloadTask) {
+  void _showDownloadCompleteDialog(
+      BuildContext context, DownloadTask downloadTask) {
     showDialog(
       context: context,
       builder: (context) => StreamBuilder<TaskSnapshot>(
-        stream: downloadTask.snapshotEvents,
-        builder: (context, snapshot) {
-          if(snapshot.hasData){
-            final snap = snapshot.data!;
-            double progress = snap.bytesTransferred / snap.totalBytes;
-            var percentage = (progress * 100).roundToDouble();
-            log('message==>$percentage');
-            if(percentage == 100.0){
-              Navigator.pop(context,'dasd');
-              Utils.showToast(message: 'File downloaded');
-            }
-            return Center(
+          stream: downloadTask.snapshotEvents,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final snap = snapshot.data!;
+              double progress = snap.bytesTransferred / snap.totalBytes;
+              var percentage = (progress * 100).roundToDouble();
+              log('download progress is ==>$percentage');
+              if (percentage == 100.0) {
+                Navigator.pop(context, 'dasd');
+                Utils.showToast(message: 'File downloaded');
+              }
+              return Center(
                 child: Transform.scale(
-              scale: 2,
-              child: CircularProgressIndicator(
-                value: percentage,
-                backgroundColor: Colors.white,
-              ),
-             ),
-            );
-          }
-          return const SizedBox.shrink();
-        }
-      ),
+                  scale: 2,
+                  child: CircularProgressIndicator(
+                    value: percentage,
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
     );
   }
 
@@ -145,6 +118,4 @@ class ClassesViewModel extends ChangeNotifier{
       ),
     );
   }
-
-
 }

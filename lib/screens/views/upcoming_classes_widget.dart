@@ -62,7 +62,7 @@ class _UpcomingClassesWidgetState extends State<UpcomingClassesWidget> {
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
             child: ListView(
               // scrollDirection: Axis.vertical,
-              physics: const BouncingScrollPhysics(),
+
               shrinkWrap: true,
               children: snapshot.data!.docs
                   .map((DocumentSnapshot document) {
@@ -82,17 +82,20 @@ class _UpcomingClassesWidgetState extends State<UpcomingClassesWidget> {
                           }
                           return ListView(
                             padding: const EdgeInsets.all(8),
-                            scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
+                            physics: const BouncingScrollPhysics(parent: NeverScrollableScrollPhysics()),
                             children: snapshot.data!.docs.map((e) {
                               DateTime dateTime = DateTime.parse(e['date']);
                               String formattedDate =
                                   DateFormat('dd EEEE').format(dateTime);
-                              return UpcomingClasses(
-                                snapshot: e,
-                                meetingTime: '$formattedDate-${e['time']}',
-                                subname: document['subName'],
-                                batch: document['batch'],
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: UpcomingClasses(
+                                  snapshot: e,
+                                  meetingTime: '$formattedDate-${e['time']}',
+                                  subname: document['subName'],
+                                  batch: document['batch'],
+                                ),
                               );
                             }).toList(),
                           );

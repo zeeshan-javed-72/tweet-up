@@ -73,7 +73,8 @@ class homestuState extends State<HomeStudent> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
-    var height = MediaQuery.of(context).size.height - AppBar().preferredSize.height;
+    var height =
+        MediaQuery.of(context).size.height - AppBar().preferredSize.height;
     return SafeArea(
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
@@ -185,7 +186,7 @@ class homestuState extends State<HomeStudent> {
                                       return const SizedBox.shrink();
                                     }
                                     return ListView(
-                                      padding: const EdgeInsets.all(8),
+                                      padding: const EdgeInsets.symmetric(vertical: 8),
                                       scrollDirection: Axis.horizontal,
                                       shrinkWrap: true,
                                       children: snapshot.data!.docs.map((e) {
@@ -194,12 +195,16 @@ class homestuState extends State<HomeStudent> {
                                         String formattedDate =
                                             DateFormat('dd EEEE')
                                                 .format(dateTime);
-                                        return UpcomingClasses(
-                                          snapshot: e,
-                                          meetingTime:
-                                              '$formattedDate-${e['time']}',
-                                          subname: document['subName'],
-                                          batch: document['batch'],
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 6),
+                                          child: UpcomingClasses(
+                                            snapshot: e,
+                                            meetingTime:
+                                                '$formattedDate-${e['time']}',
+                                            subname: document['subName'],
+                                            batch: document['batch'],
+                                          ),
                                         );
                                       }).toList(),
                                     );
