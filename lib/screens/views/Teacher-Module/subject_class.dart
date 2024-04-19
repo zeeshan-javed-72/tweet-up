@@ -15,11 +15,10 @@ class SubjectClass extends StatefulWidget {
 
 class _SubjectClassState extends State<SubjectClass> with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
-  late TabController _tabController;
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override

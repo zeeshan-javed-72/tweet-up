@@ -25,31 +25,51 @@ class Students extends StatefulWidget {
 class _StudentsState extends State<Students> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height -
-            kBottomNavigationBarHeight -
-            AppBar().preferredSize.height,
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(
-                bottom: 10,
-                left: 10,
-                right: 10,
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        shadowColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        title: Text(
+          widget.classData['subName'].toString(),
+          style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+        ),
+        iconTheme:
+        IconThemeData(color: Theme.of(context).colorScheme.secondary),
+        backgroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height -
+              kBottomNavigationBarHeight -
+              AppBar().preferredSize.height,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+               Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 10,
+                  left: 10,
+                  right: 10,
+                  top: 8
+                ),
+                child:  Text('Enrolled Students',
+                  style: TextStyle(color: Theme.of(context).colorScheme.secondary,
+                  fontSize: 18,
+                    fontWeight: FontWeight.w600
+                  ),
+                ),
               ),
-              child: Divider(),
-            ),
-            Expanded(
-              // height: 200,
-              child: widget.classData['enrolledStudents'].length == 0
-                  ? NoStudentsEnrolled(classData: widget.classData)
-                  : ListOfStudents(
-                      classData: widget.classData,
-                      user: null,
-                    ),
-            )
-          ],
+              Expanded(
+                child: widget.classData['enrolledStudents'].length == 0
+                    ? NoStudentsEnrolled(classData: widget.classData)
+                    : ListOfStudents(
+                        classData: widget.classData,
+                        user: null,
+                      ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -116,89 +136,12 @@ class NoStudentsEnrolled extends StatelessWidget {
   }
 }
 
-class UserInfo extends StatelessWidget {
-  const UserInfo({
-    super.key,
-    required this.imgURL,
-    required this.user,
-    required this.classData,
-  });
-
-  final imgURL;
-  final User user;
-  final Map classData;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 10),
-          child: Text(
-            'You are currently signed in as..',
-            style: GoogleFonts.roboto(),
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 28.0, vertical: 10),
-              child: Container(
-                  width: 50.0,
-                  height: 50.0,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          fit: BoxFit.fill, image: NetworkImage(imgURL)))),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(user.displayName!,
-                      maxLines: 1,
-                      style:
-                          GoogleFonts.questrial(fontWeight: FontWeight.bold)),
-                  Text(user.email!,
-                      style:
-                          GoogleFonts.questrial(fontWeight: FontWeight.w100)),
-                ],
-              ),
-            )
-          ],
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 28),
-          child: Divider(),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Professor',
-                  style: GoogleFonts.questrial(fontWeight: FontWeight.bold)),
-              Text(classData['profName'].toString().toUpperCase(),
-                  style: GoogleFonts.questrial(
-                      fontWeight: FontWeight.w100, fontSize: 30)),
-            ],
-          ),
-        )
-      ],
-    );
-  }
-}
-
 class ListOfStudents extends StatefulWidget {
   const ListOfStudents({
-    Key? key,
+    super.key,
     required this.classData,
     required this.user,
-  }) : super(key: key);
+  });
 
   final Map classData;
   final User? user;
@@ -257,7 +200,6 @@ class _ListOfStudentsState extends State<ListOfStudents> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
           .collection("classes")

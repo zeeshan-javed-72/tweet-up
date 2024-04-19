@@ -161,78 +161,81 @@ class AnnouncementsState extends State<Announcements> {
           ListOfAnnouncements(
               classData: widget.classData!,
               scrollController: _scrollController),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 8,
-                  child: TextFormField(
-                    controller: announcement,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    textInputAction: TextInputAction.newline,
-                    onChanged: (String? index) {
-                      if (index!.isNotEmpty) {
-                        setState(() {
-                          color = Theme.of(context).primaryColor;
-                          isTure = false;
-                        });
-                      } else if (index.isEmpty) {
-                        setState(() {
-                          color = Colors.grey.shade300;
-                          isTure = true;
-                        });
-                      }
-                    },
-                    cursorColor: Theme.of(context).primaryColor,
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.only(
-                          left: 8, top: 0, bottom: 0, right: 0),
-                      border: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(20),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 8,
+                    child: TextFormField(
+                      controller: announcement,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      textInputAction: TextInputAction.newline,
+                      onChanged: (String? index) {
+                        if (index!.isNotEmpty) {
+                          setState(() {
+                            color = Theme.of(context).primaryColor;
+                            isTure = false;
+                          });
+                        } else if (index.isEmpty) {
+                          setState(() {
+                            color = Colors.grey.shade300;
+                            isTure = true;
+                          });
+                        }
+                      },
+                      cursorColor: Theme.of(context).primaryColor,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.only(
+                            left: 8, top: 0, bottom: 0, right: 0),
+                        border: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.black),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        filled: true,
+                        hintText: "Type a message",
+                        fillColor: Colors.grey.shade300,
                       ),
-                      filled: true,
-                      hintText: "Type a message",
-                      fillColor: Colors.grey.shade300,
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    onPressed: () async {
-                      if (announcement.text.isNotEmpty) {
-                        _scrollController.animateTo(
-                            _scrollController.position.minScrollExtent,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeOut);
-                        ClassDatabase.groupMessage(
-                          widget.classData?['code'],
-                          FirebaseAuth.instance.currentUser!.uid,
-                          announcement.text.trim(),
-                          userName.toString(),
-                        );
-                        NotificationService.sendPushNotification(
-                          title: userName.toString(),
-                          body: announcement.text.trim(),
-                          fcmToken: fcmTokens,
-                          profile: userImg,
-                        );
-                        announcement.clear();
-                      }
-                    },
-                    icon: Icon(
-                      Icons.send_outlined,
-                      size: 28,
-                      color: announcement.text.isEmpty
-                          ? Colors.grey
-                          : Theme.of(context).primaryColor,
+                  Expanded(
+                    flex: 1,
+                    child: IconButton(
+                      onPressed: () async {
+                        if (announcement.text.isNotEmpty) {
+                          _scrollController.animateTo(
+                              _scrollController.position.minScrollExtent,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeOut);
+                          ClassDatabase.groupMessage(
+                            widget.classData?['code'],
+                            FirebaseAuth.instance.currentUser!.uid,
+                            announcement.text.trim(),
+                            userName.toString(),
+                          );
+                          NotificationService.sendPushNotification(
+                            title: userName.toString(),
+                            body: announcement.text.trim(),
+                            fcmToken: fcmTokens,
+                            profile: userImg,
+                          );
+                          announcement.clear();
+                        }
+                      },
+                      icon: Icon(
+                        Icons.send_outlined,
+                        size: 28,
+                        color: announcement.text.isEmpty
+                            ? Colors.grey
+                            : Theme.of(context).primaryColor,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

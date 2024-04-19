@@ -1,10 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tweet_up/Model-View_Classes/classes_view_model.dart';
-import 'package:tweet_up/generated/assets.dart';
 import 'package:tweet_up/screens/authenticate/login.dart';
 import 'package:tweet_up/services/auth.dart';
 import '../../constants/custom_textfield.dart';
@@ -65,6 +63,9 @@ class _RegisterState extends State<Register> {
                 SizedBox(height: 50*h),
                 CustomTextField(
                   contrroller: nameC,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp("[a-zA-Z]")),
+                  ],
                   keyboardInputType: TextInputType.name,
                   hintText: "Name",
                   validator: (v) {

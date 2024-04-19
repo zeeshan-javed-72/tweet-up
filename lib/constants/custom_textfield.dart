@@ -1,6 +1,6 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 import 'appColors.dart';
 
 
@@ -16,9 +16,11 @@ class CustomTextField extends StatelessWidget {
   FormFieldValidator? validator;
   bool? obscureTextt;
   double borderRadius;
+  List<TextInputFormatter>? inputFormatters;
   CustomTextField({Key? key,
     this.validator,
     this.errorMessage,
+    this.inputFormatters,
     this.onChange,
     this.contrroller,this.hintText,this.iconField,
     this.labelText,this.obscureTextt=false,
@@ -33,6 +35,7 @@ class CustomTextField extends StatelessWidget {
       textInputAction: textInputAction,
       validator: validator,
       onChanged: onChange,
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(12),
         isDense: true,
